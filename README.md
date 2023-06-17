@@ -24,12 +24,12 @@
   </li>
   <li>
     <p>Adicione os seguintes caminhos ao <code>PATH</code> das variáveis de usuário e de sistema:</p>
-    <pre>
-%ANDROID_HOME%\emulator
-%ANDROID_HOME%\tools
-%ANDROID_HOME%\tools\bin
-%ANDROID_HOME%\platform-tools
-    </pre>
+    
+    %ANDROID_HOME%\emulator
+    %ANDROID_HOME%\tools
+    %ANDROID_HOME%\tools\bin
+    %ANDROID_HOME%\platform-tools
+    
   </li>
   <li>
     <p>Configure a variável de ambiente <code>JAVA_HOME</code>:</p>
