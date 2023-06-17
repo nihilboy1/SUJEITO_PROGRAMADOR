@@ -54,8 +54,21 @@
 <p>Após concluir essas etapas, você pode criar um novo projeto com o <code>react-native-cli</code> usando os seguintes comandos:</p>
 
 <ul>
-  <li>Para criar um projeto em uma pasta vazia: <code>npx react-native init appName --template react-native-template</code>.</li>
+  <li>Para criar um projeto com <code>typescript</code> em uma pasta vazia: <code>npx react-native init appName --template react-native-template-typescript</code>.</li>
   <li>Para executar o projeto com o Android Studio aberto: <code>npx react-native run-android</code>.</li>
 </ul>
 
 <p>Essas instruções configuram seu ambiente para começar a desenvolver aplicativos com React Native. Tenha em mente que podem haver outras configurações específicas dependendo do sistema operacional que você está usando.</p>
+</br>
+
+<h2>
+Arquivos comuns no Boilerplate
+</h2>
+<h3>Babel</h3>
+<p>
+Em resumo, o arquivo babel.config.js no React Native é usado para configurar o Babel, uma ferramenta de compilação de JavaScript. Nele, você pode definir presets e plugins para transformar o código ECMAScript moderno em uma versão compatível com versões mais antigas do JavaScript. O arquivo babel.config.js é colocado no diretório raiz do projeto e pode ser personalizado de acordo com as necessidades do projeto. No entanto, a partir do React Native 0.60, a configuração padrão do Babel já é adequada para a maioria dos casos e não requer modificações manuais no arquivo babel.config.js.
+</p>
+<h3>Watchman</h3>
+<p>
+Em resumo, o arquivo .watchmanconfig é usado pelo Watchman para monitorar alterações em um diretório ou conjunto de arquivos. Ele fornece configurações específicas sobre quais diretórios ou arquivos monitorar e como lidar com as alterações. No contexto do React Native, o .watchmanconfig é útil para especificar diretórios a serem ignorados, como .git e node_modules, e para evitar monitorar diretórios associados a sistemas de controle de versão. O uso do Watchman não é obrigatório, mas pode melhorar o desempenho e a eficiência ao monitorar alterações nos arquivos e acionar ações específicas, como recarregar o aplicativo em tempo real.
+</p>
