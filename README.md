@@ -1,6 +1,6 @@
-<h2>Configuração do ambiente React Native</h2>
+<h1>Configuração do ambiente React Native</h1>
 
-<p>Antes de começar a utilizar o <code>react-native-cli</code>, é necessário instalar algumas dependências:</p>
+<h3>Antes de começar a utilizar o <code>react-native-cli</code>, é necessário instalar algumas dependências:</h3>
 
 <ol>
   <li><strong>Node.js LTS:</strong> Instale a versão LTS mais recente do Node.js.</li>
@@ -9,7 +9,7 @@
   <li><strong>Android Studio:</strong> Instale o Android Studio, que será usado para configurar e executar o ambiente de desenvolvimento Android.</li>
 </ol>
 
-<p>Após a instalação das dependências, siga as etapas abaixo:</p>
+<h3>Após a instalação das dependências, siga as etapas abaixo:</h3>
 
 <ol>
   <li>
@@ -42,14 +42,14 @@
 
 <p>Por último, em relação ao Android Studio, você pode seguir uma das duas opções:</p>
 
-<ol>
+<ul>
   <li>
-    <p>Opção 1: Instalar o Android Studio, selecionando o caminho <code>A:/Android/Sdk</code> como localização do SDK durante a instalação.</p>
+    Instalar o Android Studio, selecionando o caminho <code>A:/Android/Sdk</code> como localização do SDK durante a instalação.
   </li>
   <li>
-    <p>Opção 2: Se você já tiver o Android Studio instalado, atualize o caminho do SDK para o diretório definido anteriormente como <code>ANDROID_HOME</code>.</p>
+    Se você já tiver o Android Studio instalado, atualize o caminho do SDK para o diretório definido anteriormente como <code>ANDROID_HOME</code>.
   </li>
-</ol>
+</ul>
 
 <p>Após concluir essas etapas, você pode criar um novo projeto com o <code>react-native-cli</code> usando os seguintes comandos:</p>
 
@@ -61,14 +61,39 @@
 <p>Essas instruções configuram seu ambiente para começar a desenvolver aplicativos com React Native. Tenha em mente que podem haver outras configurações específicas dependendo do sistema operacional que você está usando.</p>
 </br>
 
-<h2>
-Arquivos comuns no Boilerplate
-</h2>
+<h1>Sobre alguns arquivos comuns no Boilerplate</h1>
 <h3>Babel</h3>
 <p>
 Em resumo, o arquivo babel.config.js no React Native é usado para configurar o Babel, uma ferramenta de compilação de JavaScript. Nele, você pode definir presets e plugins para transformar o código ECMAScript moderno em uma versão compatível com versões mais antigas do JavaScript. O arquivo babel.config.js é colocado no diretório raiz do projeto e pode ser personalizado de acordo com as necessidades do projeto. No entanto, a partir do React Native 0.60, a configuração padrão do Babel já é adequada para a maioria dos casos e não requer modificações manuais no arquivo babel.config.js.
 </p>
-<h3>Watchman</h3>
+<h2>Watchman</h2>
 <p>
 Em resumo, o arquivo .watchmanconfig é usado pelo Watchman para monitorar alterações em um diretório ou conjunto de arquivos. Ele fornece configurações específicas sobre quais diretórios ou arquivos monitorar e como lidar com as alterações. No contexto do React Native, o .watchmanconfig é útil para especificar diretórios a serem ignorados, como .git e node_modules, e para evitar monitorar diretórios associados a sistemas de controle de versão. O uso do Watchman não é obrigatório, mas pode melhorar o desempenho e a eficiência ao monitorar alterações nos arquivos e acionar ações específicas, como recarregar o aplicativo em tempo real.
 </p>
+
+<h1>Adicionando custom fonts no react-native cli</h1>
+<ol>
+<li>
+Primeiro baixamos os arquivos .ttf pelo google fonts, por exemplo
+</li>
+
+<li>
+Deixamos todos os arquivos dentro de uma pasta "fonts", que pode ficar dentro do projeto em "./src/assets/fonts"
+</li>
+
+<li>
+Após isso, criamos o arquivo "react-native.config.js" e adicionamos a ele o caminho das nossas fontes da seguinte forma:
+
+<code>
+module.exports = {
+    project: {
+        ios:{},
+        android:{}
+    },
+    assets:['./src/assets/fonts'],
+}
+</code>
+</li>
+
+<li>Por ultimo, rodamos <code>npx react-native-asset</code> para executar a ligação </li>
+</ol>

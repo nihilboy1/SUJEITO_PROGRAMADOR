@@ -41,7 +41,7 @@ export const theme = extendTheme({
   },
 
   fonts: {
-    heading: 'Roboto',
+    heading: 'Diphylleia',
     body: 'Roboto',
     mono: 'Roboto',
   },

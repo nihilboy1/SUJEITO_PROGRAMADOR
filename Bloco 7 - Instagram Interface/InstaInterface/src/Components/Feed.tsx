@@ -17,7 +17,9 @@ export function Feed({feed}: FeedProps) {
               <HStack p="2">
                 <HStack>
                   <Avatar source={{uri: item.profileImg}} />
-                  <Text>{item.name}</Text>
+                  <Text fontSize="md" fontWeight="bold">
+                    {item.name}
+                  </Text>
                 </HStack>
               </HStack>
             </View>
