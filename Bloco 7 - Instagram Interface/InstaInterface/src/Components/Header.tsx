@@ -2,7 +2,7 @@ import {HStack, Image} from 'native-base';
 import {TouchableOpacity} from 'react-native';
 import uncheckedHeart from '../assets/images/like.png';
 import instaLogo from '../assets/images/logo.png';
-import sendIcon from '../assets/images/send.png';
+import messengerLogo from '../assets/images/messenger.png';
 export function Header() {
   return (
     <HStack
@@ -23,8 +23,8 @@ export function Header() {
         </TouchableOpacity>
         <TouchableOpacity>
           <Image
-            source={sendIcon}
-            alt="Ícone de envio"
+            source={messengerLogo}
+            alt="Ícone messenger"
             width={30}
             height={30}
           />

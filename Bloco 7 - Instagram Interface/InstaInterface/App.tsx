@@ -9,6 +9,7 @@ const mockData = [
   {
     id: '1',
     name: 'Lucas Silva',
+    place: 'Brazil',
     description: 'Mais um dia de muitos bugs :)',
     profileImg: 'https://sujeitoprogramador.com/instareact/fotoPerfil1.png',
     postImg: 'https://sujeitoprogramador.com/instareact/foto1.png',
@@ -18,6 +19,7 @@ const mockData = [
   {
     id: '2',
     name: 'Matheus',
+    place: 'Brazil',
     description: 'Isso sim é ser raiz!!!!!',
     profileImg: 'https://sujeitoprogramador.com/instareact/fotoPerfil2.png',
     postImg: 'https://sujeitoprogramador.com/instareact/foto2.png',
@@ -27,6 +29,7 @@ const mockData = [
   {
     id: '3',
     name: 'Jose Augusto',
+    place: 'Estados Unidos',
     description:
       'Bora trabalhar, hoje estou começando em um projeto novo aqui no sujeito, desde o backend ao frontend',
     profileImg: 'https://sujeitoprogramador.com/instareact/fotoPerfil3.png',
@@ -37,6 +40,7 @@ const mockData = [
   {
     id: '4',
     name: 'Gustavo Henrique',
+    place: 'Japão',
     description: 'Isso sim que é TI!',
     profileImg: 'https://sujeitoprogramador.com/instareact/fotoPerfil1.png',
     postImg: 'https://sujeitoprogramador.com/instareact/foto4.png',
@@ -46,6 +50,7 @@ const mockData = [
   {
     id: '5',
     name: 'Guilherme',
+    place: 'Brazil',
     description: 'Boa tarde galera do insta...',
     profileImg: 'https://sujeitoprogramador.com/instareact/fotoPerfil2.png',
     postImg: 'https://sujeitoprogramador.com/instareact/foto5.png',
@@ -57,6 +62,7 @@ const mockData = [
 export type feedDataType = {
   id: string;
   name: string;
+  place: string;
   description: string;
   profileImg: string;
   postImg: string;
