@@ -59,7 +59,7 @@ const mockData = [
   },
 ];
 
-export type feedDataType = {
+export type PostData = {
   id: string;
   name: string;
   place: string;
@@ -68,15 +68,15 @@ export type feedDataType = {
   postImg: string;
   liked: boolean;
   likesAmount: number;
-}[];
+};
 
 export default function App() {
-  const [feedData, setFeedData] = useState<feedDataType>(mockData);
+  const [feedData, setFeedData] = useState<PostData[]>(mockData);
   return (
     <NativeBaseProvider theme={theme}>
-      <SafeAreaView style={{flex: 1}}>
+      <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
         <Header />
-        <Feed feed={feedData} />
+        <Feed feedData={feedData} />
       </SafeAreaView>
     </NativeBaseProvider>
   );
