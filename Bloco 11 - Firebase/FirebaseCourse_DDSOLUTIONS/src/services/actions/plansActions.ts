@@ -1,12 +1,14 @@
 import {
   addPlansAcess,
+  deleteDocummentPlansAcess,
   getCollectionPlansAcess,
   getDocummentPlansAcess,
   setPlansAcess,
   updatePlansAcess,
 } from '../dataAcess/plansAcess';
+import {PlanType} from '../interfaces/plansInterfaces';
 
-export async function addPlansActions(body: any) {
+export async function addPlansActions(body: PlanType) {
   const response = await addPlansAcess(body);
 
   return response.id;
@@ -33,12 +35,17 @@ export async function getCollectionPlansActions() {
   return plansData;
 }
 
-export async function setPlansActions(body: any, docId?: string) {
+export async function setPlansActions(body: PlanType, docId?: string) {
   const response = await setPlansAcess(body, docId);
   return response;
 }
 
 export async function updatePlansActions(body: any, docId: string) {
   const response = await updatePlansAcess(body, docId);
+  return response;
+}
+
+export async function deleteDocummentPlansActions(docId: string) {
+  const response = await deleteDocummentPlansAcess(docId);
   return response;
 }
