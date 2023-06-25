@@ -1,12 +1,17 @@
 import {useNavigation} from '@react-navigation/native';
 import {Controller, useForm} from 'react-hook-form';
-import {Button, Text, TextInput, View} from 'react-native';
-import {useAuthContext} from '../hooks/useAuthContext';
-import {AppNavigatorAuthRoutesProps} from '../routes/AuthRoutes';
+import {Button, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import {useAuthContext} from '../../hooks/useAuthContext';
+import {AppNavigatorAuthRoutesProps} from '../../routes/AuthRoutes';
+
+export type onSubmitType = {
+  email: string;
+  password: string;
+};
 
 export function SignUp() {
   const {navigate} = useNavigation<AppNavigatorAuthRoutesProps>();
-  const {handleSignUp} = useAuthContext();
+  const {signUp, userIsLoggedIn, user} = useAuthContext();
 
   const {
     control,
@@ -19,8 +24,8 @@ export function SignUp() {
     },
   });
 
-  function onSubmit(data: any) {
-    console.log(data);
+  async function onSubmit({email, password}: onSubmitType) {
+    await signUp(email, password);
   }
 
   return (
@@ -31,6 +36,8 @@ export function SignUp() {
         rules={{required: true}}
         render={({field: {onChange, value}}) => (
           <TextInput
+            style={{color: 'black'}}
+            placeholderTextColor={'#000000'}
             placeholder="email"
             keyboardType="email-address"
             onChangeText={onChange}
@@ -45,6 +52,8 @@ export function SignUp() {
         rules={{required: true}}
         render={({field: {onChange, value}}) => (
           <TextInput
+            style={{color: 'black'}}
+            placeholderTextColor={'#000000'}
             placeholder="password"
             keyboardType="visible-password"
             onChangeText={onChange}
@@ -54,6 +63,18 @@ export function SignUp() {
       />
       {errors.password && <Text>This is required.</Text>}
       <Button title="Cadastrar" onPress={handleSubmit(onSubmit)} />
+      <TouchableOpacity
+        style={{marginTop: 20, backgroundColor: 'blue', padding: 10}}
+        onPress={() => navigate('signIn')}>
+        <Text style={{textAlign: 'center', color: 'white'}}>
+          Move to SignIn
+        </Text>
+      </TouchableOpacity>
+      {userIsLoggedIn && (
+        <View>
+          <Text>Usuário logado: {user.email}</Text>
+        </View>
+      )}
     </View>
   );
 }
