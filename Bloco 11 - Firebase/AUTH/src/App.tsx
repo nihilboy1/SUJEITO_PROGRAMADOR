@@ -5,8 +5,8 @@ import {AuthRoutes} from './routes/AuthRoutes';
 
 export function App() {
   const user = auth.currentUser;
-  console.log(user?.email);
   const {userIsLoggedIn} = useAuthContext();
+  console.log(userIsLoggedIn);
   if (user) {
     return <Home />;
   }

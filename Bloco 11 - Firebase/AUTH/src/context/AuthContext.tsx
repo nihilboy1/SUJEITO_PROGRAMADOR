@@ -1,18 +1,16 @@
 import {
   User,
   createUserWithEmailAndPassword,
-  onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut as signOutFromEmailAndPassword,
 } from 'firebase/auth';
-import {ReactNode, createContext, useEffect, useState} from 'react';
+import {ReactNode, createContext, useState} from 'react';
 import {Alert} from 'react-native';
 import {auth} from '../../Firebase/connection';
 
 export type ContextDataProps = {
   user: User;
   userIsLoggedIn: boolean;
-  checkIfUserIsLoggedIn: () => void;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -29,18 +27,6 @@ type ContextProviderProps = {
 export function ContextProvider({children}: ContextProviderProps) {
   const [user, setUser] = useState<User>({} as User);
   const [userIsLoggedIn, setUserIsLoggedIn] = useState(false);
-
-  function checkIfUserIsLoggedIn() {
-    onAuthStateChanged(auth, user => {
-      if (user) {
-        setUser(user);
-        setUserIsLoggedIn(true);
-      } else {
-        setUserIsLoggedIn(false);
-        setUser({} as User);
-      }
-    });
-  }
 
   async function signIn(email: string, password: string) {
     await signInWithEmailAndPassword(auth, email, password)
@@ -80,15 +66,11 @@ export function ContextProvider({children}: ContextProviderProps) {
     setUserIsLoggedIn(false);
   }
 
-  useEffect(() => {
-    checkIfUserIsLoggedIn();
-  }, []);
   return (
     <AuthContext.Provider
       value={{
         user,
         userIsLoggedIn,
-        checkIfUserIsLoggedIn,
         signIn,
         signUp,
         signOut,
