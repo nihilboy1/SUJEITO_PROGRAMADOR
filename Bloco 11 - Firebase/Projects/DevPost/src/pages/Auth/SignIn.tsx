@@ -1,16 +1,27 @@
 import {useNavigation} from '@react-navigation/native';
 import {useState} from 'react';
-import {Alert, Button, Text, TextInput, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Button,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import {useAuthContext} from '../../hooks/useAuthContext';
 import {StackAuthRoutesProps} from '../../routes/auth.routes';
 export function SignIn() {
   const {navigate} = useNavigation<StackAuthRoutesProps>();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  function handleSignIn() {
+  const {signIn, isAuthLoading} = useAuthContext();
+
+  async function handleSignIn() {
     if (email === '' || password === '') {
       Alert.alert('Existem campos vazios');
       return;
     }
+    await signIn(email, password);
   }
 
   return (
@@ -47,7 +58,14 @@ export function SignIn() {
         }}
         placeholder="Password"
       />
-      <Button title="Entrar no App" color="red" onPress={handleSignIn} />
+
+      <View>
+        {isAuthLoading ? (
+          <ActivityIndicator />
+        ) : (
+          <Button title="Entrar no App" color="red" onPress={handleSignIn} />
+        )}
+      </View>
       <Button
         title="Ir para Sign-Up"
         color="blue"

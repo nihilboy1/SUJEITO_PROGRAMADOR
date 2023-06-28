@@ -1,6 +1,14 @@
 import {useNavigation} from '@react-navigation/native';
 import {useState} from 'react';
-import {Alert, Button, Text, TextInput, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Button,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+import {useAuthContext} from '../../hooks/useAuthContext';
 import {StackAuthRoutesProps} from '../../routes/auth.routes';
 
 export function SignUp() {
@@ -8,12 +16,18 @@ export function SignUp() {
   const [email, setEmail] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const {signUp, isAuthLoading} = useAuthContext();
 
-  function handleSignUp() {
+  async function handleSignUp() {
     if (email === '' || password === '' || name === '') {
       Alert.alert('Existem campos vazios');
       return;
     }
+    await signUp(email, password, name);
+    Alert.alert('Usuário cadastrado com sucesso');
+    setEmail('');
+    setName('');
+    setPassword('');
   }
   return (
     <View
@@ -58,7 +72,17 @@ export function SignUp() {
         }}
         placeholder="Password"
       />
-      <Button title="Criar Conta" color="blue" onPress={handleSignUp} />
+      <View>
+        {isAuthLoading ? (
+          <ActivityIndicator />
+        ) : (
+          <Button
+            title="Criar Conta e Entrar"
+            color="blue"
+            onPress={handleSignUp}
+          />
+        )}
+      </View>
       <Button
         title="Voltar para Sign-In"
         color="red"

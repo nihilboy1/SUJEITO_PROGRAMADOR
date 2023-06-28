@@ -13,10 +13,8 @@ export default function App() {
             flex: 1,
             borderWidth: 1,
             borderColor: 'blue',
-            backgroundColor: '#36393f',
           }}>
           <StatusBar
-            backgroundColor="#36393f"
             translucent={false}
             barStyle="light-content"
           />

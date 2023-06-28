@@ -1,12 +1,11 @@
 import {ActivityIndicator, View} from 'react-native';
+import {useAuthContext} from '../hooks/useAuthContext';
 import {AuthRoutes} from './auth.routes';
-import {PrivateRoutes} from './private.routes';
-import { useAuthContext } from '../hooks/useAuthContext';
+import {TabPrivateRoutes} from './private.tab.routes';
 
 export function Routes() {
-  const {loggedInUser} = useAuthContext()
-  const loading = false;
-  if (loading) {
+  const {loggedInUser, isLocalUserFetched} = useAuthContext();
+  if (!isLocalUserFetched) {
     return (
       <View
         style={{
@@ -18,5 +17,5 @@ export function Routes() {
       </View>
     );
   }
-  return loggedInUser ? <PrivateRoutes /> : <AuthRoutes />;
+  return loggedInUser ? <TabPrivateRoutes /> : <AuthRoutes />;
 }
