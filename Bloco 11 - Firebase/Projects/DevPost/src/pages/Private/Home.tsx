@@ -1,40 +1,88 @@
+import {FirebaseFirestoreTypes} from '@react-native-firebase/firestore';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useCallback, useState} from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {FlatList, TouchableOpacity, View} from 'react-native';
+import Toast from 'react-native-toast-message';
 import Feather from 'react-native-vector-icons/Feather';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import defaultAvatarImg from '../../assets/avatar.png';
-import {remoteDatabaseGetPosts} from '../../connection/database';
-import {useAuthContext} from '../../hooks/useAuthContext';
+import {Post} from '../../components/Post';
+
+import {
+  firebaseGetNewerPostsFromAllUser,
+  firebaseGetOlderPostsFromAllUser,
+} from '../../connection/database';
 import {StackPrivateRoutesProps} from '../../routes/private.stack.routes';
 import {postDTO} from '../../types/postDTO';
-
 export function Home() {
   const {navigate} = useNavigation<StackPrivateRoutesProps>();
-  const {user} = useAuthContext();
   const [posts, setPosts] = useState<postDTO[]>([]);
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
+  const [lastPost, setLastPost] =
+    useState<FirebaseFirestoreTypes.DocumentData>();
+  const [theresNoMorePosts, setTheresNoMorePosts] = useState(false);
+
+  async function handleFirebaseGetNewerPostsFromAllUser() {
+    if (theresNoMorePosts) {
+      setIsLoadingPosts(false);
+
+      Toast.show({
+        type: 'info',
+        text1: 'There is no more posts to show',
+        position: 'bottom',
+      });
+      return;
+    }
+    if (isLoadingPosts) {
+      return;
+    }
+
+    try {
+      setIsLoadingPosts(true);
+      if (lastPost) {
+        const [newerPosts, theresNoMorePosts, lastPostFromNewer] =
+          await firebaseGetNewerPostsFromAllUser(lastPost);
+        setPosts(currentPosts => [...currentPosts, ...newerPosts]);
+        setLastPost(lastPostFromNewer);
+        setTheresNoMorePosts(theresNoMorePosts);
+        if (theresNoMorePosts) {
+          setIsLoadingPosts(false);
+
+          Toast.show({
+            type: 'info',
+            text1: 'There is no more posts to show',
+            position: 'bottom',
+          });
+          return;
+        }
+      }
+    } catch (error) {
+      console.log('Erro na função handleFirebaseGetNewerPosts');
+      throw error;
+    } finally {
+      setIsLoadingPosts(false);
+    }
+  }
+
+  async function handlefirebaseGetOlderPostsFromAllUser() {
+    try {
+      setIsLoadingPosts(true);
+      firebaseGetOlderPostsFromAllUser().then(response => {
+        const [olderPosts, theresNoMorePosts, lastPostFromOlder] = response;
+        if (olderPosts !== undefined) {
+          setPosts(olderPosts);
+          setLastPost(lastPostFromOlder);
+          setTheresNoMorePosts(theresNoMorePosts);
+        }
+      });
+    } catch (error) {
+      console.log('Erro na função handleFirebaseGetOlderPosts');
+    } finally {
+      setIsLoadingPosts(false);
+    }
+  }
 
   useFocusEffect(
     useCallback(() => {
-      try {
-        setIsLoadingPosts(true);
-        remoteDatabaseGetPosts().then(postsList => {
-          if (postsList !== undefined) {
-            setPosts(postsList);
-          }
-        });
-      } catch (error) {
-      } finally {
-        setIsLoadingPosts(false);
-      }
+      handlefirebaseGetOlderPostsFromAllUser();
     }, []),
   );
   return (
@@ -45,69 +93,20 @@ export function Home() {
         padding: 15,
         backgroundColor: 'grey',
       }}>
-      {isLoadingPosts ? (
-        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-          <ActivityIndicator size={50} color="blue" />
-        </View>
-      ) : (
-        <FlatList
-          data={posts}
-          renderItem={({item}) => (
-            <View
-              style={{
-                height: 230,
-                marginBottom: 15,
-                borderRadius: 5,
-                padding: 8,
-                backgroundColor: 'white',
-                justifyContent: 'space-between',
-              }}>
-              <TouchableOpacity
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 10,
-                  backgroundColor: 'grey',
-                  borderRadius: 50,
-                }}>
-                <Image
-                  source={defaultAvatarImg}
-                  style={{width: 55, height: 55}}
-                />
-                <Text style={{fontSize: 18, fontWeight: 'bold'}}>
-                  {item.author}
-                </Text>
-              </TouchableOpacity>
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: 'bold',
-                  marginLeft: 20,
-                }}>
-                {item.content}
-              </Text>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                {item.likes > 0 ? (
-                  <>
-                    <Text style={{color: '#e52246'}}>{item.likes}</Text>
-                    <MaterialCommunityIcons
-                      name="heart-plus-outline"
-                      size={20}
-                      color="#e52246"
-                    />
-                  </>
-                ) : (
-                  <MaterialCommunityIcons
-                    name="heart"
-                    size={20}
-                    color="#e52246"
-                  />
-                )}
-              </View>
-            </View>
-          )}
-        />
-      )}
+      <FlatList
+        contentContainerStyle={{paddingBottom: 80}}
+        showsVerticalScrollIndicator={false}
+        data={posts}
+        onEndReached={() => {
+          handleFirebaseGetNewerPostsFromAllUser();
+        }}
+        onEndReachedThreshold={0.1}
+        onRefresh={handlefirebaseGetOlderPostsFromAllUser}
+        refreshing={isLoadingPosts}
+        renderItem={({item}) => {
+          return <Post postData={item} />;
+        }}
+      />
       <TouchableOpacity
         onPress={() => {
           navigate('newpost');

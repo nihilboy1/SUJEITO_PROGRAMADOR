@@ -1,13 +1,10 @@
 import {ReactNode, createContext, useEffect, useState} from 'react';
 import {
-  remoteAuthConnectUser,
-  remoteAuthCreateUser,
-  remoteAuthDisconnectUser,
+  firebaseConnectUser,
+  firebaseCreateUser,
+  firebaseDisconnectUser,
 } from '../connection/auth';
-import {
-  remoteDatabaseGetUser,
-  remoteDatabaseSetUser,
-} from '../connection/database';
+import {firebaseGetUser, firebaseSetUser} from '../connection/database';
 import {
   localStorageDeleteUser,
   localStorageGetUser,
@@ -42,15 +39,15 @@ export function AuthContextProvider({children}: ContextProviderProps) {
   async function signUp(email: string, password: string, name: string) {
     try {
       setIsAuthLoading(true);
-      const uid = await remoteAuthCreateUser(email, password);
+      const uid = await firebaseCreateUser(email, password);
       if (uid !== undefined) {
         const user = {
           uid,
           name,
           email,
-          createdAt: new Date(),
+          timeStamp: Date.now(),
         };
-        await remoteDatabaseSetUser(user, uid);
+        await firebaseSetUser(user, uid);
         await signIn(email, password);
       }
     } catch (error) {
@@ -63,15 +60,15 @@ export function AuthContextProvider({children}: ContextProviderProps) {
   async function signIn(email: string, password: string) {
     try {
       setIsAuthLoading(true);
-      const uid = await remoteAuthConnectUser(email, password);
+      const uid = await firebaseConnectUser(email, password);
       if (uid !== undefined) {
-        const response = await remoteDatabaseGetUser(uid);
+        const response = await firebaseGetUser(uid);
         if (response !== undefined) {
           const user = {
             uid: response.uid,
             name: response.name,
             email: response.email,
-            createdAt: response.createdAt,
+            timeStamp: response.timeStamp,
           } as userDTO;
           await localStorageSetUser(user);
           setUser(user);
@@ -101,9 +98,9 @@ export function AuthContextProvider({children}: ContextProviderProps) {
   }
 
   async function signOut() {
-    await remoteAuthDisconnectUser();
+    await firebaseDisconnectUser();
     await localStorageDeleteUser();
-    setUser({} as userDTO);
+    setUser(null);
     setIsAuthLoading(false);
     setLoggedInUser(false);
   }

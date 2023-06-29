@@ -6,7 +6,7 @@ import {remoteStorageDownloadFile} from '../../connection/storage';
 import {useAuthContext} from '../../hooks/useAuthContext';
 
 export function NewPost() {
-  const [post, setPost] = useState('');
+  const [postText, setPostText] = useState('');
   const [posting, setPosting] = useState(false);
   const {goBack} = useNavigation();
   const {user} = useAuthContext();
@@ -14,7 +14,7 @@ export function NewPost() {
   async function handleRemoteDatabaseAddPost() {
     try {
       setPosting(true);
-      if (post === '') {
+      if (postText === '') {
         console.log('O post não pode estar vazio');
         return;
       }
@@ -24,9 +24,8 @@ export function NewPost() {
         if (file) {
           avatarUrl = file;
         }
-        await remoteDatabaseAddPost(post, user.name, user.uid, avatarUrl);
-        setPost('');
-        Alert.alert('Post cadastrado com sucesso!');
+        await remoteDatabaseAddPost(postText, user.name, user.uid, avatarUrl);
+        setPostText('');
         goBack();
       }
     } catch (error) {
@@ -44,7 +43,7 @@ export function NewPost() {
         style={{color: 'black', fontSize: 25, marginBottom: 30}}
         placeholderTextColor={'grey'}
         onChangeText={value => {
-          setPost(value);
+          setPostText(value);
         }}
       />
       {posting ? (

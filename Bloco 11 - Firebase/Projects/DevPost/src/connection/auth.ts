@@ -1,6 +1,6 @@
 import auth from '@react-native-firebase/auth';
 
-export async function remoteAuthCreateUser(email: string, password: string) {
+export async function firebaseCreateUser(email: string, password: string) {
   try {
     const response = await auth().createUserWithEmailAndPassword(
       email,
@@ -13,12 +13,12 @@ export async function remoteAuthCreateUser(email: string, password: string) {
   } finally {
   }
 }
-export async function remoteAuthConnectUser(email: string, password: string) {
+export async function firebaseConnectUser(email: string, password: string) {
   const response = await auth().signInWithEmailAndPassword(email, password);
   const uid = response.user.uid;
   return uid;
 }
-export async function remoteAuthDisconnectUser() {
+export async function firebaseDisconnectUser() {
   try {
     await auth().signOut();
   } catch (error) {

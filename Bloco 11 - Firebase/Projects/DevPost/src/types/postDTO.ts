@@ -1,8 +1,12 @@
 export type postDTO = {
+  id: string,
   uid: string;
-  createdAt: Date;
+  timeStamp: number;
   content: string;
   author: string;
   avatarUrl: string | null;
-  likes: number;
+  usersWhoLiked: string[]
 };
+
+export type addPostDTO = Omit<postDTO, 'id' >;
+
