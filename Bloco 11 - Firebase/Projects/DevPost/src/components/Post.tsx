@@ -2,7 +2,7 @@ import {useNavigation} from '@react-navigation/native';
 import {formatDistance} from 'date-fns';
 import {ptBR} from 'date-fns/locale';
 import {useState} from 'react';
-import {Image, Text, TouchableOpacity, View} from 'react-native';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import defaultAvatarImg from '../assets/avatar.png';
 import {firebaseUpdateUsersWhoLikedAPost} from '../connection/database';
@@ -24,23 +24,24 @@ export function Post({postData}: PostProps) {
   if (!user?.uid) {
     return null;
   }
-  const uid = user.uid;
-  const name = user.name;
+  const currentUserId = user.uid;
+  const uid = postData.uid;
+  const name = postData.author;
 
-  const likedByCurrentUser = usersWhoLiked.includes(user.uid)
+  const likedByCurrentUser = usersWhoLiked.includes(currentUserId)
     ? 'heart'
     : 'hearto';
   async function handleFirebaseUpdateUsersWhoLikedAPost(id: string) {
-    if (!usersWhoLiked.includes(uid)) {
+    if (!usersWhoLiked.includes(currentUserId)) {
       setUsersWhoLiked(currentUsersWhoLiked => {
-        const updatedUsersWhoLiked = [...currentUsersWhoLiked, uid];
+        const updatedUsersWhoLiked = [...currentUsersWhoLiked, currentUserId];
         firebaseUpdateUsersWhoLikedAPost(id, updatedUsersWhoLiked);
         return updatedUsersWhoLiked;
       });
     } else {
       const usersWhoLikedWithoutTheCurrentUser = usersWhoLiked.filter(
         userId => {
-          return userId !== uid;
+          return userId !== currentUserId;
         },
       );
       setUsersWhoLiked(usersWhoLikedWithoutTheCurrentUser);
@@ -56,66 +57,25 @@ export function Post({postData}: PostProps) {
   }
 
   return (
-    <View
-      style={{
-        height: 230,
-        marginBottom: 15,
-        borderRadius: 5,
-        padding: 15,
-        backgroundColor: 'white',
-        justifyContent: 'space-between',
-      }}>
+    <View style={S.container}>
       <TouchableOpacity
         onPress={() => {
           navigate('userposts', {uid, name});
         }}
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 10,
-          backgroundColor: 'grey',
-          borderRadius: 50,
-        }}>
+        style={S.navigateButton}>
         <Image
           source={
             postData.avatarUrl ? {uri: postData.avatarUrl} : defaultAvatarImg
           }
-          style={{width: 55, height: 55, borderRadius: 99}}
+          style={S.avatar}
         />
-        <Text style={{fontSize: 18, fontWeight: 'bold'}}>
-          {postData.author}
-        </Text>
+        <Text style={S.author}>{postData.author}</Text>
       </TouchableOpacity>
-      <Text
-        style={{
-          fontSize: 18,
-          fontWeight: 'bold',
-        }}>
-        {postData.content}
-      </Text>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
+      <Text style={S.content}>{postData.content}</Text>
+      <View style={S.footerContainer}>
         {usersWhoLiked.length > 0 ? (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}>
-            <Text
-              style={{
-                color: '#e52246',
-                fontSize: 18,
-                fontWeight: 'bold',
-                marginRight: 5,
-                marginBottom: 4,
-              }}>
-              {usersWhoLiked.length}
-            </Text>
+          <View style={S.footerInnerContainer}>
+            <Text style={S.likesAmount}>{usersWhoLiked.length}</Text>
             <TouchableOpacity
               onPress={() => {
                 handleFirebaseUpdateUsersWhoLikedAPost(postData.id);
@@ -131,8 +91,57 @@ export function Post({postData}: PostProps) {
             <AntDesign name={likedByCurrentUser} size={25} color="#e52246" />
           </TouchableOpacity>
         )}
-        <Text style={{fontSize: 17}}>{formatDate(postData.timeStamp)}</Text>
+        <Text style={S.time}>{formatDate(postData.timeStamp)}</Text>
       </View>
     </View>
   );
 }
+
+const S = StyleSheet.create({
+  container: {
+    height: 230,
+    marginBottom: 15,
+    borderRadius: 5,
+    padding: 15,
+    backgroundColor: 'white',
+    justifyContent: 'space-between',
+  },
+
+  navigateButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: 'grey',
+    borderRadius: 50,
+  },
+
+  avatar: {width: 55, height: 55, borderRadius: 99},
+
+  author: {fontSize: 18, fontWeight: 'bold'},
+
+  content: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+
+  footerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+
+  footerInnerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  likesAmount: {
+    color: '#e52246',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginRight: 5,
+    marginBottom: 4,
+  },
+
+  time: {fontSize: 17},
+});

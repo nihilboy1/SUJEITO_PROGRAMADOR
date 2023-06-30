@@ -22,6 +22,7 @@ export async function firebaseDisconnectUser() {
   try {
     await auth().signOut();
   } catch (error) {
-    console.log('Erro na função remoteAuthDisconnectUser');
+    console.log('Erro na função firebaseDisconnectUser');
+    throw error;
   }
 }

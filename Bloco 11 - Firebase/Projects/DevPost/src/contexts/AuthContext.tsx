@@ -86,7 +86,8 @@ export function AuthContextProvider({children}: ContextProviderProps) {
     try {
       setIsLocalUserFetched(false);
       const user = await localStorageGetUser();
-      if (user !== undefined) {
+      if (user.uid !== undefined) {
+        console.log('n');
         setUser(user);
         setLoggedInUser(true);
       }

@@ -4,6 +4,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import {AuthContextProvider} from './src/contexts/AuthContext';
 import {Routes} from './src/routes/routes';
+import {colors} from './src/theme/theme';
 import {toastConfig} from './toastConfig';
 
 export default function App() {
@@ -13,10 +14,13 @@ export default function App() {
         <SafeAreaView
           style={{
             flex: 1,
-            borderWidth: 1,
-            borderColor: 'blue',
+            backgroundColor: colors.black,
           }}>
-          <StatusBar translucent={false} barStyle="light-content" />
+          <StatusBar
+            translucent={false}
+            barStyle="light-content"
+            backgroundColor={colors.black}
+          />
           <Routes />
         </SafeAreaView>
       </AuthContextProvider>

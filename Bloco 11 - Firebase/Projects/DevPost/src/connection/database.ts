@@ -120,7 +120,7 @@ export async function firebaseGetAllPostsFromAUser(uid: string) {
   const response = await firestore()
     .collection(postsCollection)
     .where('uid', '==', uid)
-    .orderBy('createdAt', 'desc')
+    .orderBy('timeStamp', 'desc')
     .get();
 
   const userPosts: postDTO[] = response.docs.map(doc => {

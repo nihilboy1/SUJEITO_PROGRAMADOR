@@ -4,6 +4,7 @@ import {
   ActivityIndicator,
   Alert,
   Button,
+  StyleSheet,
   Text,
   TextInput,
   View,
@@ -30,20 +31,14 @@ export function SignUp() {
     setPassword('');
   }
   return (
-    <View
-      style={{alignItems: 'center', flex: 1, justifyContent: 'space-around'}}>
-      <Text style={{fontSize: 20, fontWeight: 'bold'}}>Criar Conta</Text>
+    <View style={S.container}>
+      <Text style={S.title}>Criar Conta</Text>
       <TextInput
         value={name}
         onChangeText={value => {
           setName(value);
         }}
-        style={{
-          fontSize: 20,
-          fontWeight: 'bold',
-          borderWidth: 1,
-          width: '90%',
-        }}
+        style={S.nameInput}
         placeholder="Name"
       />
       <TextInput
@@ -51,12 +46,7 @@ export function SignUp() {
         onChangeText={value => {
           setEmail(value);
         }}
-        style={{
-          fontSize: 20,
-          fontWeight: 'bold',
-          borderWidth: 1,
-          width: '90%',
-        }}
+        style={S.emailInput}
         placeholder="Email"
       />
       <TextInput
@@ -64,12 +54,7 @@ export function SignUp() {
         onChangeText={value => {
           setPassword(value);
         }}
-        style={{
-          fontSize: 20,
-          fontWeight: 'bold',
-          borderWidth: 1,
-          width: '90%',
-        }}
+        style={S.passwordInput}
         placeholder="Password"
       />
       <View>
@@ -91,3 +76,27 @@ export function SignUp() {
     </View>
   );
 }
+
+const S = StyleSheet.create({
+  container: {alignItems: 'center', flex: 1, justifyContent: 'space-around'},
+  title: {fontSize: 20, fontWeight: 'bold'},
+  nameInput: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    borderWidth: 1,
+    width: '90%',
+  },
+  emailInput: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    borderWidth: 1,
+    width: '90%',
+  },
+
+  passwordInput: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    borderWidth: 1,
+    width: '90%',
+  },
+});

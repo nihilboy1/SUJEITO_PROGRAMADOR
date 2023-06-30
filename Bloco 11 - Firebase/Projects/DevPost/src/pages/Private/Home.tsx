@@ -1,11 +1,11 @@
 import {FirebaseFirestoreTypes} from '@react-native-firebase/firestore';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useCallback, useState} from 'react';
-import {FlatList, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import Toast from 'react-native-toast-message';
 import Feather from 'react-native-vector-icons/Feather';
-import {Post} from '../../components/Post';
 
+import {PostsList} from '../../components/PostsList';
 import {
   firebaseGetNewerPostsFromAllUser,
   firebaseGetOlderPostsFromAllUser,
@@ -86,45 +86,41 @@ export function Home() {
     }, []),
   );
   return (
-    <View
-      style={{
-        flex: 1,
-        position: 'relative',
-        padding: 15,
-        backgroundColor: 'grey',
-      }}>
-      <FlatList
-        contentContainerStyle={{paddingBottom: 80}}
-        showsVerticalScrollIndicator={false}
-        data={posts}
-        onEndReached={() => {
-          handleFirebaseGetNewerPostsFromAllUser();
-        }}
-        onEndReachedThreshold={0.1}
-        onRefresh={handlefirebaseGetOlderPostsFromAllUser}
-        refreshing={isLoadingPosts}
-        renderItem={({item}) => {
-          return <Post postData={item} />;
-        }}
+    <View style={S.container}>
+      <PostsList
+        getNewPosts={handleFirebaseGetNewerPostsFromAllUser}
+        getBasePosts={firebaseGetOlderPostsFromAllUser}
+        isLoadingPosts={isLoadingPosts}
+        posts={posts}
       />
       <TouchableOpacity
         onPress={() => {
           navigate('newpost');
         }}
-        style={{
-          position: 'absolute',
-          right: '6%',
-          bottom: '6%',
-          width: 60,
-          height: 60,
-          zIndex: 1000,
-          backgroundColor: '#000',
-          borderRadius: 30,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
+        style={S.button}>
         <Feather name="edit-2" color={'white'} size={25} />
       </TouchableOpacity>
     </View>
   );
 }
+
+const S = StyleSheet.create({
+  container: {
+    flex: 1,
+    position: 'relative',
+    padding: 15,
+    backgroundColor: 'grey',
+  },
+  button: {
+    position: 'absolute',
+    right: '6%',
+    bottom: '6%',
+    width: 60,
+    height: 60,
+    zIndex: 1000,
+    backgroundColor: '#000',
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
