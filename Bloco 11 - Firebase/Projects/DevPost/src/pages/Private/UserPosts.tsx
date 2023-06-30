@@ -4,12 +4,14 @@ import {
   useRoute,
 } from '@react-navigation/native';
 import {useCallback, useState} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import Feather from 'react-native-vector-icons/Feather';
 import {PostsList} from '../../components/PostsList';
 import {firebaseGetAllPostsFromAUser} from '../../connection/database';
 import {useAuthContext} from '../../hooks/useAuthContext';
 import {userPostsRouteProps} from '../../routes/private.stack.routes';
+import {colors} from '../../theme/theme';
 import {postDTO} from '../../types/postDTO';
 
 export function UserPosts() {
@@ -41,13 +43,15 @@ export function UserPosts() {
   return (
     <SafeAreaView style={S.safeContainer}>
       <View style={S.innerContainer}>
-        <TouchableOpacity onPress={goBack} style={S.goBackButton}>
-          <Text style={S.goBackTextIcon}>{'<'}</Text>
-        </TouchableOpacity>
+        <Pressable style={S.buttonBack} onPress={() => goBack()}>
+          <Feather name="chevron-left" size={32} color={colors.black} />
+        </Pressable>
         <Text style={S.postsAuthor}>
           {user?.name == name ? 'Seus Posts' : name}
         </Text>
-        <Text />
+        <Pressable style={[S.buttonBack, S.invi]}>
+          <Feather name="chevron-left" size={32} color={colors.black} />
+        </Pressable>
       </View>
       <PostsList
         getBasePosts={handleFirebaseGetAllPostsFromAUser}
@@ -59,17 +63,29 @@ export function UserPosts() {
 }
 
 const S = StyleSheet.create({
+  invi: {
+    color: 'transparent',
+    backgroundColor: 'transparent',
+  },
   safeContainer: {
     flex: 1,
     borderWidth: 1,
     padding: 10,
-    backgroundColor: 'gray',
+    backgroundColor: colors.black,
     justifyContent: 'center',
   },
   innerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 10,
+  },
+  buttonBack: {
+    backgroundColor: colors.lightBlue,
+    borderRadius: 5,
+    padding: 2,
+    paddingHorizontal: 8,
+    paddingRight: 10,
   },
 
   goBackButton: {

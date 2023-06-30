@@ -44,6 +44,7 @@ export function AuthContextProvider({children}: ContextProviderProps) {
         const user = {
           uid,
           name,
+          nameInsensitive: name.toUpperCase(),
           email,
           timeStamp: Date.now(),
         };
@@ -67,6 +68,7 @@ export function AuthContextProvider({children}: ContextProviderProps) {
           const user = {
             uid: response.uid,
             name: response.name,
+            nameInsensitive: response.nameInsensitive,
             email: response.email,
             timeStamp: response.timeStamp,
           } as userDTO;
@@ -87,7 +89,6 @@ export function AuthContextProvider({children}: ContextProviderProps) {
       setIsLocalUserFetched(false);
       const user = await localStorageGetUser();
       if (user.uid !== undefined) {
-        console.log('n');
         setUser(user);
         setLoggedInUser(true);
       }

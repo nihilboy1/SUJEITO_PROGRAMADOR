@@ -1,29 +1,39 @@
 import {FirebaseFirestoreTypes} from '@react-native-firebase/firestore';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 import {useCallback, useState} from 'react';
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import Toast from 'react-native-toast-message';
-import Feather from 'react-native-vector-icons/Feather';
 
+import {NewPostModal} from '../../components/NewPostModal';
+import {NewPostWidget} from '../../components/NewPostWidget';
 import {PostsList} from '../../components/PostsList';
 import {
+  firebaseAddPost,
   firebaseGetNewerPostsFromAllUser,
   firebaseGetOlderPostsFromAllUser,
 } from '../../connection/database';
-import {StackPrivateRoutesProps} from '../../routes/private.stack.routes';
+import {remoteStorageDownloadFile} from '../../connection/storage';
+import {useAuthContext} from '../../hooks/useAuthContext';
+import {colors} from '../../theme/theme';
 import {postDTO} from '../../types/postDTO';
 export function Home() {
-  const {navigate} = useNavigation<StackPrivateRoutesProps>();
   const [posts, setPosts] = useState<postDTO[]>([]);
+  const [posting, setPosting] = useState(false);
+
+  const {user} = useAuthContext();
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
+  const [postPlaceholder, setPostPlaceholder] = useState<string>('');
+  const [postText, setPostText] = useState('');
+
   const [lastPost, setLastPost] =
     useState<FirebaseFirestoreTypes.DocumentData>();
+  const [modalVisible, setModalVisible] = useState(false);
+
   const [theresNoMorePosts, setTheresNoMorePosts] = useState(false);
 
   async function handleFirebaseGetNewerPostsFromAllUser() {
     if (theresNoMorePosts) {
       setIsLoadingPosts(false);
-
       Toast.show({
         type: 'info',
         text1: 'There is no more posts to show',
@@ -80,11 +90,62 @@ export function Home() {
     }
   }
 
+  async function handlefirebaseAddPost() {
+    try {
+      setPosting(true);
+      if (postText === '') {
+        console.log('O post não pode estar vazio');
+        return;
+      }
+      let avatarUrl = null;
+      if (user?.uid) {
+        const file = await remoteStorageDownloadFile('users', user.uid);
+        if (file) {
+          avatarUrl = file;
+        }
+        await firebaseAddPost(postText, user.name, user.uid, avatarUrl);
+        setPostText('');
+      }
+    } catch (error) {
+      console.log('Erro na função handlefirebaseAddPost');
+    } finally {
+      setPosting(false);
+      setModalVisible(false);
+      setTheresNoMorePosts(false);
+      setIsLoadingPosts(false);
+      setPostText('');
+      if (lastPost) {
+        handleFirebaseGetNewerPostsFromAllUser();
+      } else {
+        handlefirebaseGetOlderPostsFromAllUser();
+      }
+    }
+  }
+
+  function getRandomPlaceholder() {
+    const placeholderPhrases: string[] = [
+      'Share your thoughts.',
+      "Tell us what's new.",
+      'Got something to say?',
+      'Share your story.',
+      'Write it down!',
+      "What's on your mind?",
+      'Got news to share?',
+      'Express yourself!',
+      'Speak your mind.',
+      'Write away!',
+    ];
+    const random = Math.floor(Math.random() * placeholderPhrases.length);
+    setPostPlaceholder(placeholderPhrases[random]);
+  }
+
   useFocusEffect(
     useCallback(() => {
       handlefirebaseGetOlderPostsFromAllUser();
+      getRandomPlaceholder();
     }, []),
   );
+
   return (
     <View style={S.container}>
       <PostsList
@@ -93,13 +154,15 @@ export function Home() {
         isLoadingPosts={isLoadingPosts}
         posts={posts}
       />
-      <TouchableOpacity
-        onPress={() => {
-          navigate('newpost');
-        }}
-        style={S.button}>
-        <Feather name="edit-2" color={'white'} size={25} />
-      </TouchableOpacity>
+      <NewPostModal
+        setModalVisible={setModalVisible}
+        modalVisible={modalVisible}
+        postPlaceholder={postPlaceholder}
+        posting={posting}
+        setPostText={setPostText}
+        handlefirebaseAddPost={handlefirebaseAddPost}
+      />
+      <NewPostWidget setModalVisible={setModalVisible} />
     </View>
   );
 }
@@ -109,18 +172,6 @@ const S = StyleSheet.create({
     flex: 1,
     position: 'relative',
     padding: 15,
-    backgroundColor: 'grey',
-  },
-  button: {
-    position: 'absolute',
-    right: '6%',
-    bottom: '6%',
-    width: 60,
-    height: 60,
-    zIndex: 1000,
-    backgroundColor: '#000',
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: colors.black,
   },
 });

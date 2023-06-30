@@ -5,6 +5,7 @@ import {
 import Feather from 'react-native-vector-icons/Feather';
 import {Profile} from '../pages/Private/Profile';
 import {Search} from '../pages/Private/Search';
+import {colors} from '../theme/theme';
 import {PrivateStackRoutes} from './private.stack.routes';
 
 type TabPrivateRoutesList = {
@@ -24,9 +25,10 @@ export function TabPrivateRoutes() {
         headerShown: false,
         tabBarHideOnKeyboard: true,
         tabBarShowLabel: false,
-        tabBarActiveTintColor: 'white',
+        tabBarActiveTintColor: colors.white,
+        tabBarInactiveTintColor: colors.black,
         tabBarStyle: {
-          backgroundColor: '#202225',
+          backgroundColor: colors.lightBlue,
           borderTopWidth: 0,
         },
       }}>

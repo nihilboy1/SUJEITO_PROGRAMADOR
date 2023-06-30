@@ -3,14 +3,16 @@ import {useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Button,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import {useAuthContext} from '../../hooks/useAuthContext';
 import {StackAuthRoutesProps} from '../../routes/auth.routes';
+import {colors} from '../../theme/theme';
 
 export function SignUp() {
   const {navigate} = useNavigation<StackAuthRoutesProps>();
@@ -31,72 +33,120 @@ export function SignUp() {
     setPassword('');
   }
   return (
-    <View style={S.container}>
-      <Text style={S.title}>Criar Conta</Text>
+    <ScrollView contentContainerStyle={S.container}>
+      <Text style={S.title}>Create Account</Text>
       <TextInput
+        placeholderTextColor={colors.gray}
         value={name}
         onChangeText={value => {
           setName(value);
         }}
-        style={S.nameInput}
+        style={S.Input}
         placeholder="Name"
       />
       <TextInput
+        placeholderTextColor={colors.gray}
         value={email}
         onChangeText={value => {
           setEmail(value);
         }}
-        style={S.emailInput}
+        style={S.Input}
         placeholder="Email"
       />
       <TextInput
+        placeholderTextColor={colors.gray}
         value={password}
         onChangeText={value => {
           setPassword(value);
         }}
-        style={S.passwordInput}
+        style={S.Input}
         placeholder="Password"
       />
+
       <View>
         {isAuthLoading ? (
-          <ActivityIndicator />
+          <View style={S.signUpAndLoginButton}>
+            <ActivityIndicator color={colors.lightBlue} size={30} />
+          </View>
         ) : (
-          <Button
-            title="Criar Conta e Entrar"
-            color="blue"
-            onPress={handleSignUp}
-          />
+          <TouchableOpacity
+            style={S.signUpAndLoginButton}
+            onPress={handleSignUp}>
+            <Text style={S.signInButtonText}>SignUp and Login</Text>
+          </TouchableOpacity>
         )}
       </View>
-      <Button
-        title="Voltar para Sign-In"
-        color="red"
-        onPress={() => navigate('signIn')}
-      />
-    </View>
+      <TouchableOpacity
+        style={S.moveToSignIn}
+        onPress={() => {
+          navigate('signIn');
+        }}>
+        <Text style={S.moveToSignInText}>Go back to SignIn</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
 
 const S = StyleSheet.create({
-  container: {alignItems: 'center', flex: 1, justifyContent: 'space-around'},
-  title: {fontSize: 20, fontWeight: 'bold'},
-  nameInput: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    borderWidth: 1,
-    width: '90%',
-  },
-  emailInput: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    borderWidth: 1,
-    width: '90%',
+  container: {
+    alignItems: 'center',
+    backgroundColor: colors.black,
+    flex: 1,
+    gap: 50,
   },
 
-  passwordInput: {
+  Input: {
     fontSize: 20,
+    backgroundColor: colors.darkGreen,
     fontWeight: 'bold',
+    color: colors.black,
     borderWidth: 1,
+    borderColor: colors.white,
+    paddingLeft: 15,
     width: '90%',
+    borderRadius: 15,
+  },
+
+  signUpAndLoginButton: {
+    backgroundColor: colors.darkGreen,
+    borderRadius: 15,
+    padding: 10,
+    width: 240,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    borderColor: colors.white,
+  },
+
+  moveToSignIn: {
+    backgroundColor: colors.lightBlue,
+    borderRadius: 15,
+    padding: 10,
+    width: 230,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    borderColor: colors.white,
+  },
+
+  moveToSignInText: {
+    color: colors.black,
+    fontWeight: 'bold',
+    fontSize: 20,
+    textAlign: 'center',
+  },
+
+  signInButtonText: {
+    color: colors.black,
+    fontWeight: 'bold',
+    fontSize: 24,
+    textAlign: 'center',
+  },
+
+  title: {
+    fontSize: 30,
+    color: colors.darkGreen,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    textTransform: 'uppercase',
+    marginTop: 45,
   },
 });

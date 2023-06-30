@@ -1,6 +1,7 @@
 export type userDTO = {
-    uid: string;
-    name: string;
-    email: string;
-    timeStamp: number
-}
+  uid: string;
+  name: string;
+  nameInsensitive: string;
+  email: string;
+  timeStamp: number;
+};

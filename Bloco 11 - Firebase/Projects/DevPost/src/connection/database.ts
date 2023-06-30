@@ -49,7 +49,7 @@ export async function firebaseGetOlderPostsFromAllUser(): Promise<
   try {
     const response = await firestore()
       .collection(postsCollection)
-      .orderBy('timeStamp', 'desc')
+      .orderBy('timeStamp')
       .limit(3)
       .get();
     const theresNoMorePosts = !!response.empty;
@@ -78,7 +78,7 @@ export async function firebaseGetNewerPostsFromAllUser(
   try {
     const response = await firestore()
       .collection(postsCollection)
-      .orderBy('timeStamp', 'desc')
+      .orderBy('timeStamp')
       .startAfter(lastPost)
       .limit(3)
       .get();
@@ -120,7 +120,7 @@ export async function firebaseGetAllPostsFromAUser(uid: string) {
   const response = await firestore()
     .collection(postsCollection)
     .where('uid', '==', uid)
-    .orderBy('timeStamp', 'desc')
+    .orderBy('timeStamp')
     .get();
 
   const userPosts: postDTO[] = response.docs.map(doc => {
@@ -135,4 +135,30 @@ export async function firebaseGetAllPostsFromAUser(uid: string) {
     };
   });
   return userPosts;
+}
+
+export function firebaseGetUsersByName(
+  fullOrPartialUserName: string,
+  setSearchedUsers: React.Dispatch<React.SetStateAction<userDTO[]>>,
+) {
+  const fullOrPartialUserNameInUpperCase = fullOrPartialUserName.toUpperCase();
+  const sub = firestore()
+    .collection(usersCollection)
+    .where('NAME', '>=', fullOrPartialUserNameInUpperCase)
+    .where('NAME', '<=', fullOrPartialUserNameInUpperCase + '\uf8ff')
+    .onSnapshot(response => {
+      const usersList: userDTO[] = response.docs.map(doc => {
+        return {
+          uid: doc.data().uid,
+          name: doc.data().name,
+          nameInsensitive: doc.data().nameInsensitive,
+          email: doc.data().email,
+          timeStamp: doc.data().timeStamp,
+        };
+      });
+
+      setSearchedUsers(usersList);
+    });
+
+  return sub;
 }

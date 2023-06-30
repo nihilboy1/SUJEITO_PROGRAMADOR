@@ -3,6 +3,7 @@ import {useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -27,7 +28,7 @@ export function SignIn() {
   }
 
   return (
-    <View style={S.container}>
+    <ScrollView contentContainerStyle={S.container}>
       <Text style={S.title}>Feed APP</Text>
       <TextInput
         placeholderTextColor={colors.gray}
@@ -39,6 +40,7 @@ export function SignIn() {
         placeholder="Email"
       />
       <TextInput
+        onSubmitEditing={handleSignIn}
         placeholderTextColor={colors.gray}
         value={password}
         onChangeText={value => {
@@ -69,7 +71,7 @@ export function SignIn() {
         }}>
         <Text style={S.moveToSignUpText}>Create account</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -78,7 +80,7 @@ const S = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.black,
     flex: 1,
-    justifyContent: 'space-around',
+    gap: 50,
   },
 
   emailInput: {
@@ -145,5 +147,6 @@ const S = StyleSheet.create({
     fontWeight: 'bold',
     fontStyle: 'italic',
     textTransform: 'uppercase',
+    marginTop: 45,
   },
 });

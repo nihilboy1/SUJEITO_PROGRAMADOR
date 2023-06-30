@@ -1,6 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
 import {formatDistance} from 'date-fns';
-import {ptBR} from 'date-fns/locale';
 import {useState} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -8,6 +7,7 @@ import defaultAvatarImg from '../assets/avatar.png';
 import {firebaseUpdateUsersWhoLikedAPost} from '../connection/database';
 import {useAuthContext} from '../hooks/useAuthContext';
 import {StackPrivateRoutesProps} from '../routes/private.stack.routes';
+import {colors} from '../theme/theme';
 import {postDTO} from '../types/postDTO';
 
 type PostProps = {
@@ -52,7 +52,7 @@ export function Post({postData}: PostProps) {
   function formatDate(timeStamp: number) {
     const postDate = new Date(timeStamp);
     return formatDistance(new Date(), postDate, {
-      locale: ptBR,
+      /* Poderia aqui passar o Locale PT-BR, mas optei por deixar tudo em inglês*/
     });
   }
 
@@ -80,16 +80,27 @@ export function Post({postData}: PostProps) {
               onPress={() => {
                 handleFirebaseUpdateUsersWhoLikedAPost(postData.id);
               }}>
-              <AntDesign name={likedByCurrentUser} size={25} color="#e52246" />
+              <AntDesign
+                name={likedByCurrentUser}
+                size={25}
+                color={colors.darkGreen}
+              />
             </TouchableOpacity>
           </View>
         ) : (
-          <TouchableOpacity
-            onPress={() => {
-              handleFirebaseUpdateUsersWhoLikedAPost(postData.id);
-            }}>
-            <AntDesign name={likedByCurrentUser} size={25} color="#e52246" />
-          </TouchableOpacity>
+          <View style={S.footerInnerContainer}>
+            <Text style={S.beTheFirstToLike}>Be the first to like </Text>
+            <TouchableOpacity
+              onPress={() => {
+                handleFirebaseUpdateUsersWhoLikedAPost(postData.id);
+              }}>
+              <AntDesign
+                name={likedByCurrentUser}
+                size={25}
+                color={colors.darkGreen}
+              />
+            </TouchableOpacity>
+          </View>
         )}
         <Text style={S.time}>{formatDate(postData.timeStamp)}</Text>
       </View>
@@ -103,25 +114,28 @@ const S = StyleSheet.create({
     marginBottom: 15,
     borderRadius: 5,
     padding: 15,
-    backgroundColor: 'white',
-    justifyContent: 'space-between',
+    backgroundColor: colors.white,
   },
 
   navigateButton: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: 'grey',
+    backgroundColor: colors.darkGreen,
     borderRadius: 50,
   },
 
   avatar: {width: 55, height: 55, borderRadius: 99},
 
-  author: {fontSize: 18, fontWeight: 'bold'},
+  author: {fontSize: 18, fontWeight: 'bold', color: colors.black},
 
   content: {
     fontSize: 18,
+    height: 100,
     fontWeight: 'bold',
+    color: colors.gray,
+    marginTop: 10,
+    marginBottom: 10,
   },
 
   footerContainer: {
@@ -136,12 +150,19 @@ const S = StyleSheet.create({
     justifyContent: 'space-between',
   },
   likesAmount: {
-    color: '#e52246',
+    color: colors.black,
     fontSize: 18,
     fontWeight: 'bold',
     marginRight: 5,
     marginBottom: 4,
   },
 
-  time: {fontSize: 17},
+  beTheFirstToLike: {
+    color: colors.black,
+    fontSize: 16,
+    marginRight: 5,
+    marginBottom: 4,
+  },
+
+  time: {fontSize: 17, color: colors.gray},
 });
