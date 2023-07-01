@@ -162,3 +162,5 @@ export function firebaseGetUsersByName(
 
   return sub;
 }
+
+export async function firebaseUpdateUserName(newName: string) {}

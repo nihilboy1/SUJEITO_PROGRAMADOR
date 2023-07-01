@@ -1,5 +1,5 @@
 import {StyleSheet, TouchableOpacity} from 'react-native';
-import Feather from 'react-native-vector-icons/Feather';
+import Entypo from 'react-native-vector-icons/Entypo';
 import {colors} from '../theme/theme';
 
 type NewPostWidgetProps = {
@@ -13,7 +13,7 @@ export function NewPostWidget({setModalVisible}: NewPostWidgetProps) {
         setModalVisible(true);
       }}
       style={S.button}>
-      <Feather name="edit-2" color={colors.black} size={25} />
+      <Entypo name="pencil" color={colors.black} size={25} />
     </TouchableOpacity>
   );
 }
