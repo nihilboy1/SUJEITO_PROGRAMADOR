@@ -1,9 +1,9 @@
 import {FlatList} from 'react-native';
-import {postDTO} from '../types/postDTO';
+import {getPostDTO} from '../types/postDTO';
 import {Post} from './Post';
 
 type PostListProps = {
-  posts: postDTO[];
+  posts: getPostDTO[];
   getNewPosts?: () => void;
   getBasePosts: () => void;
   isLoadingPosts: boolean;

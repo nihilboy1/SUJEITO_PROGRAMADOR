@@ -1,7 +1,7 @@
 import firestore, {
   FirebaseFirestoreTypes,
 } from '@react-native-firebase/firestore';
-import {addPostDTO, postDTO} from '../types/postDTO';
+import {addPostDTO, getPostDTO} from '../types/postDTO';
 import {userDTO} from '../types/userDTO';
 
 const usersCollection = 'users';
@@ -22,20 +22,21 @@ export async function firebaseGetUser(uid: string) {
     console.log('Erro na função remoteGetUser');
   }
 }
+export async function firebaseGetUserName(uid: string) {
+  try {
+    const doc = await firestore().collection(usersCollection).doc(uid).get();
+    return doc.data()?.name;
+  } catch (error) {
+    console.log('Erro na função remoteGetUser');
+  }
+}
 
-export async function firebaseAddPost(
-  content: string,
-  author: string,
-  uid: string,
-  avatarUrl: string | null,
-) {
+export async function firebaseAddPost(content: string, uid: string) {
   try {
     const post: addPostDTO = {
       uid,
       timeStamp: Date.now(),
       content,
-      author,
-      avatarUrl,
       usersWhoLiked: [],
     };
     await firestore().collection(postsCollection).add(post);
@@ -44,21 +45,20 @@ export async function firebaseAddPost(
   }
 }
 export async function firebaseGetOlderPostsFromAllUser(): Promise<
-  [postDTO[], boolean, FirebaseFirestoreTypes.DocumentData]
+  [getPostDTO[], boolean, FirebaseFirestoreTypes.DocumentData]
 > {
   try {
-    const response = await firestore()
+    const postsResponse = await firestore()
       .collection(postsCollection)
       .orderBy('timeStamp')
       .limit(3)
       .get();
-    const theresNoMorePosts = !!response.empty;
-    const lastPostFromOlder = response.docs[response.docs.length - 1];
-    const olderPosts: postDTO[] = response.docs.map(doc => {
+
+    const theresNoMorePosts = !!postsResponse.empty;
+    const lastPostFromOlder = postsResponse.docs[postsResponse.docs.length - 1];
+    const olderPosts: getPostDTO[] = postsResponse.docs.map(doc => {
       return {
         id: doc.id,
-        author: doc.data().author,
-        avatarUrl: doc.data().avatarUrl,
         content: doc.data().content,
         usersWhoLiked: doc.data().usersWhoLiked,
         uid: doc.data().uid,
@@ -74,7 +74,7 @@ export async function firebaseGetOlderPostsFromAllUser(): Promise<
 
 export async function firebaseGetNewerPostsFromAllUser(
   lastPost: FirebaseFirestoreTypes.DocumentData,
-): Promise<[postDTO[], boolean, FirebaseFirestoreTypes.DocumentData]> {
+): Promise<[getPostDTO[], boolean, FirebaseFirestoreTypes.DocumentData]> {
   try {
     const response = await firestore()
       .collection(postsCollection)
@@ -84,10 +84,9 @@ export async function firebaseGetNewerPostsFromAllUser(
       .get();
     const lastPostFromNewer = response.docs[response.docs.length - 1];
     const theresNoMorePosts = response.empty;
-    const newerPosts: postDTO[] = response.docs.map(doc => {
+    const newerPosts: getPostDTO[] = response.docs.map(doc => {
       return {
         id: doc.id,
-        author: doc.data().author,
         avatarUrl: doc.data().avatarUrl,
         content: doc.data().content,
         usersWhoLiked: doc.data().usersWhoLiked,
@@ -123,11 +122,10 @@ export async function firebaseGetAllPostsFromAUser(uid: string) {
     .orderBy('timeStamp')
     .get();
 
-  const userPosts: postDTO[] = response.docs.map(doc => {
+  const userPosts: getPostDTO[] = response.docs.map(doc => {
     return {
       id: doc.id,
       author: doc.data().author,
-      avatarUrl: doc.data().avatarUrl,
       content: doc.data().content,
       usersWhoLiked: doc.data().usersWhoLiked,
       uid: doc.data().uid,
@@ -150,6 +148,7 @@ export function firebaseGetUsersByName(
       const usersList: userDTO[] = response.docs.map(doc => {
         return {
           uid: doc.data().uid,
+          avatarUrl: doc.data().avatarUrl,
           name: doc.data().name,
           nameInsensitive: doc.data().nameInsensitive,
           email: doc.data().email,
@@ -163,4 +162,14 @@ export function firebaseGetUsersByName(
   return sub;
 }
 
-export async function firebaseUpdateUserName(newName: string) {}
+export async function firebaseUpdateUserName(newName: string, uid: string) {
+  try {
+    await firestore().collection(usersCollection).doc(uid).update({
+      name: newName,
+      nameInsensitive: newName.toUpperCase(),
+    });
+  } catch (error) {
+    console.log('Erro na função firebaseUpdateUserName');
+    throw error;
+  }
+}

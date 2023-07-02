@@ -17,6 +17,7 @@ type ContextDataProps = {
   isLocalUserFetched: boolean;
   user: userDTO | null;
   isAuthLoading: boolean;
+  setUser: (user: userDTO) => void;
   signUp: (email: string, password: string, name: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -44,6 +45,7 @@ export function AuthContextProvider({children}: ContextProviderProps) {
         const user = {
           uid,
           name,
+          avatarUrl: null,
           nameInsensitive: name.toUpperCase(),
           email,
           timeStamp: Date.now(),
@@ -65,13 +67,14 @@ export function AuthContextProvider({children}: ContextProviderProps) {
       if (uid !== undefined) {
         const response = await firebaseGetUser(uid);
         if (response !== undefined) {
-          const user = {
+          const user: userDTO = {
             uid: response.uid,
             name: response.name,
             nameInsensitive: response.nameInsensitive,
             email: response.email,
             timeStamp: response.timeStamp,
-          } as userDTO;
+            avatarUrl: response.avatarUrl,
+          };
           await localStorageSetUser(user);
           setUser(user);
           setLoggedInUser(true);
@@ -115,6 +118,7 @@ export function AuthContextProvider({children}: ContextProviderProps) {
     <AuthContext.Provider
       value={{
         user,
+        setUser,
         isLocalUserFetched,
         isAuthLoading,
         loggedInUser,

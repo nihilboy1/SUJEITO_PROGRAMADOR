@@ -15,9 +15,9 @@ import {
 import {remoteStorageDownloadFile} from '../../connection/storage';
 import {useAuthContext} from '../../hooks/useAuthContext';
 import {colors} from '../../theme/theme';
-import {postDTO} from '../../types/postDTO';
+import {getPostDTO} from '../../types/postDTO';
 export function Home() {
-  const [posts, setPosts] = useState<postDTO[]>([]);
+  const [posts, setPosts] = useState<getPostDTO[]>([]);
   const [posting, setPosting] = useState(false);
 
   const {user} = useAuthContext();
@@ -103,7 +103,7 @@ export function Home() {
         if (file) {
           avatarUrl = file;
         }
-        await firebaseAddPost(postText, user.name, user.uid, avatarUrl);
+        await firebaseAddPost(postText, user.uid);
         setPostText('');
       }
     } catch (error) {
@@ -172,6 +172,6 @@ const S = StyleSheet.create({
     flex: 1,
     position: 'relative',
     padding: 15,
-    backgroundColor: colors.black,
+    backgroundColor: colors.gray,
   },
 });

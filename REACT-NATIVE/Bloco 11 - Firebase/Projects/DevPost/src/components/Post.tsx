@@ -1,17 +1,20 @@
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {formatDistance} from 'date-fns';
-import {useState} from 'react';
+import {useCallback, useState} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import defaultAvatarImg from '../assets/avatar.png';
-import {firebaseUpdateUsersWhoLikedAPost} from '../connection/database';
+import {
+  firebaseGetUserName,
+  firebaseUpdateUsersWhoLikedAPost,
+} from '../connection/database';
 import {useAuthContext} from '../hooks/useAuthContext';
 import {StackPrivateRoutesProps} from '../routes/private.stack.routes';
 import {colors} from '../theme/theme';
-import {postDTO} from '../types/postDTO';
+import {getPostDTO} from '../types/postDTO';
 
 type PostProps = {
-  postData: postDTO;
+  postData: getPostDTO;
 };
 
 export function Post({postData}: PostProps) {
@@ -20,13 +23,13 @@ export function Post({postData}: PostProps) {
   const [usersWhoLiked, setUsersWhoLiked] = useState<string[]>(
     postData.usersWhoLiked,
   );
+  const [author, setAuthor] = useState<string>('');
 
   if (!user?.uid) {
     return null;
   }
   const currentUserId = user.uid;
   const uid = postData.uid;
-  const name = postData.author;
 
   const likedByCurrentUser = usersWhoLiked.includes(currentUserId)
     ? 'heart'
@@ -56,20 +59,23 @@ export function Post({postData}: PostProps) {
     });
   }
 
+  useFocusEffect(
+    useCallback(() => {
+      firebaseGetUserName(uid).then(response => {
+        setAuthor(response);
+      });
+    }, []),
+  );
+
   return (
     <View style={S.container}>
       <TouchableOpacity
         onPress={() => {
-          navigate('userposts', {uid, name});
+          navigate('userposts', {uid, name: author});
         }}
         style={S.navigateButton}>
-        <Image
-          source={
-            postData.avatarUrl ? {uri: postData.avatarUrl} : defaultAvatarImg
-          }
-          style={S.avatar}
-        />
-        <Text style={S.author}>{postData.author}</Text>
+        <Image source={defaultAvatarImg} style={S.avatar} />
+        <Text style={S.author}>{author}</Text>
       </TouchableOpacity>
       <Text style={S.content}>{postData.content}</Text>
       <View style={S.footerContainer}>
@@ -83,7 +89,7 @@ export function Post({postData}: PostProps) {
               <AntDesign
                 name={likedByCurrentUser}
                 size={25}
-                color={colors.darkGreen}
+                color={colors.darkBlue}
               />
             </TouchableOpacity>
           </View>
@@ -97,7 +103,7 @@ export function Post({postData}: PostProps) {
               <AntDesign
                 name={likedByCurrentUser}
                 size={25}
-                color={colors.darkGreen}
+                color={colors.darkBlue}
               />
             </TouchableOpacity>
           </View>
@@ -114,18 +120,19 @@ const S = StyleSheet.create({
     marginBottom: 15,
     borderRadius: 5,
     padding: 15,
-    backgroundColor: colors.white,
+    backgroundColor: colors.black,
   },
 
   navigateButton: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: colors.darkGreen,
+    backgroundColor: colors.darkBlue,
     borderRadius: 50,
+    padding: 5,
   },
 
-  avatar: {width: 55, height: 55, borderRadius: 99},
+  avatar: {width: 45, height: 45, borderRadius: 99},
 
   author: {fontSize: 18, fontWeight: 'bold', color: colors.black},
 
@@ -133,7 +140,7 @@ const S = StyleSheet.create({
     fontSize: 18,
     height: 100,
     fontWeight: 'bold',
-    color: colors.gray,
+    color: colors.white,
     marginTop: 10,
     marginBottom: 10,
   },
@@ -150,7 +157,7 @@ const S = StyleSheet.create({
     justifyContent: 'space-between',
   },
   likesAmount: {
-    color: colors.black,
+    color: colors.white,
     fontSize: 18,
     fontWeight: 'bold',
     marginRight: 5,
@@ -158,7 +165,7 @@ const S = StyleSheet.create({
   },
 
   beTheFirstToLike: {
-    color: colors.black,
+    color: colors.gray,
     fontSize: 16,
     marginRight: 5,
     marginBottom: 4,
