@@ -12,7 +12,7 @@ import {
   firebaseGetNewerPostsFromAllUser,
   firebaseGetOlderPostsFromAllUser,
 } from '../../connection/database';
-import {remoteStorageDownloadFile} from '../../connection/storage';
+import {storageDownloadUserAvatar} from '../../connection/storage';
 import {useAuthContext} from '../../hooks/useAuthContext';
 import {colors} from '../../theme/theme';
 import {getPostDTO} from '../../types/postDTO';
@@ -99,7 +99,7 @@ export function Home() {
       }
       let avatarUrl = null;
       if (user?.uid) {
-        const file = await remoteStorageDownloadFile('users', user.uid);
+        const file = await storageDownloadUserAvatar(user.uid);
         if (file) {
           avatarUrl = file;
         }

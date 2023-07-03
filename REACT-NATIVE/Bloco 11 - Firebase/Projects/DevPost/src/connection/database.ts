@@ -142,8 +142,8 @@ export function firebaseGetUsersByName(
   const fullOrPartialUserNameInUpperCase = fullOrPartialUserName.toUpperCase();
   const sub = firestore()
     .collection(usersCollection)
-    .where('NAME', '>=', fullOrPartialUserNameInUpperCase)
-    .where('NAME', '<=', fullOrPartialUserNameInUpperCase + '\uf8ff')
+    .where('nameInsensitive', '>=', fullOrPartialUserNameInUpperCase)
+    .where('nameInsensitive', '<=', fullOrPartialUserNameInUpperCase + '\uf8ff')
     .onSnapshot(response => {
       const usersList: userDTO[] = response.docs.map(doc => {
         return {
@@ -155,7 +155,7 @@ export function firebaseGetUsersByName(
           timeStamp: doc.data().timeStamp,
         };
       });
-
+      console.log(usersList);
       setSearchedUsers(usersList);
     });
 

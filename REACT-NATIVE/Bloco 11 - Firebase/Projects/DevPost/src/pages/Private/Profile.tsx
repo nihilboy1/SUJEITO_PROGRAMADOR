@@ -10,12 +10,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {launchImageLibrary} from 'react-native-image-picker';
 import Feather from 'react-native-vector-icons/Feather';
 import defaultAvatarImg from '../../assets/avatar.png';
 import {
   firebaseGetUser,
   firebaseUpdateUserName,
 } from '../../connection/database';
+import {storageUploadUserAvatar} from '../../connection/storage';
 import {useAuthContext} from '../../hooks/useAuthContext';
 import {localStorageSetUser} from '../../storage/userStorage';
 import {colors} from '../../theme/theme';
@@ -23,7 +25,7 @@ import {userDTO} from '../../types/userDTO';
 
 export function Profile() {
   const {signOut, user, setUser} = useAuthContext();
-  if (!user?.name) {
+  if (!user?.uid) {
     return;
   }
   const [updatingUser, setUpdatingUser] = useState(false);
@@ -57,6 +59,22 @@ export function Profile() {
     }
   }
 
+  async function handleStorageUploadFile() {
+    if (!user?.uid) {
+      return;
+    }
+    launchImageLibrary({mediaType: 'photo'}, res => {
+      if (res.assets && res.assets[0].uri) {
+        const filePath = res.assets[0].uri;
+        storageUploadUserAvatar(filePath, user.uid);
+      } else if (res.didCancel) {
+        console.log('Cancelled');
+      } else if (res.errorCode) {
+        console.log('Error');
+      }
+    });
+  }
+
   useEffect(() => {
     if (user?.name == name || name == '') {
       setEnabledButton(false);
@@ -75,9 +93,8 @@ export function Profile() {
   return (
     <ScrollView contentContainerStyle={S.container}>
       <Text style={S.userEmailText}>{user.email}</Text>
-
       <TouchableOpacity
-        onPress={() => {}}
+        onPress={handleStorageUploadFile}
         style={[
           S.uploadAvatarButton,
           !avatarUrl
