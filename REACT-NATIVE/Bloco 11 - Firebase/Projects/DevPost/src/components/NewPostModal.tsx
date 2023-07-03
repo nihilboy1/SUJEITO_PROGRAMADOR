@@ -16,13 +16,13 @@ type NewPostModalProps = {
   postPlaceholder: string;
   handlefirebaseAddPost: () => void;
   setModalVisible: (value: boolean) => void;
-  setPostText: (value: string) => void;
+  setPostContent: (value: string) => void;
 };
 
 export function NewPostModal({
   modalVisible,
   setModalVisible,
-  setPostText,
+  setPostContent,
   handlefirebaseAddPost,
   postPlaceholder,
   posting,
@@ -58,7 +58,7 @@ export function NewPostModal({
             style={S.input}
             placeholderTextColor={colors.gray}
             onChangeText={value => {
-              setPostText(value);
+              setPostContent(value);
             }}
           />
           {posting ? (

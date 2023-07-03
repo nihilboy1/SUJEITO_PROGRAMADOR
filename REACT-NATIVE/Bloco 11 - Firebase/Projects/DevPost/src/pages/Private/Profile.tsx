@@ -15,9 +15,14 @@ import Feather from 'react-native-vector-icons/Feather';
 import defaultAvatarImg from '../../assets/avatar.png';
 import {
   firebaseGetUser,
-  firebaseUpdateUserName,
+  firebaseUpdateUser,
+  firebaseUpdateUserPosts,
 } from '../../connection/database';
-import {storageUploadUserAvatar} from '../../connection/storage';
+import {
+  storageDeleteUserAvatar,
+  storageDownloadUserAvatar,
+  storageUploadUserAvatar,
+} from '../../connection/storage';
 import {useAuthContext} from '../../hooks/useAuthContext';
 import {localStorageSetUser} from '../../storage/userStorage';
 import {colors} from '../../theme/theme';
@@ -28,88 +33,175 @@ export function Profile() {
   if (!user?.uid) {
     return;
   }
-  const [updatingUser, setUpdatingUser] = useState(false);
-  const [name, setName] = useState<string>(user.name);
-  const [avatarUrl, setAvatarUrl] = useState<string>('');
-  const [enabledButton, setEnabledButton] = useState<boolean>(false);
+  const [updatingUserName, setUpdatingUserName] = useState(false);
+  const [updatingUserAvatarUrl, setUpdatingUserAvatarUrl] = useState(false);
 
-  async function handleFirebaseUpdateUserName() {
+  const [oldName, setOldName] = useState(user.name);
+  const [currentName, setCurrentName] = useState<string>(user.name);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(user.avatarUrl);
+  const [disabledButton, setDisabledButton] = useState<boolean>(true);
+
+  async function handleUpdateUserName() {
     try {
-      setUpdatingUser(true);
-      if (user?.uid) {
-        await firebaseUpdateUserName(name, user.uid);
-        const response = await firebaseGetUser(user.uid);
-        if (response !== undefined) {
-          const user = {
-            uid: response.uid,
-            name: response.name,
-            nameInsensitive: response.nameInsensitive,
-            email: response.email,
-            timeStamp: response.timeStamp,
-          } as userDTO;
-          await localStorageSetUser(user);
-          setUser(user);
+      setUpdatingUserName(true);
+      if (!user?.uid) {
+        return;
+      }
+      await firebaseUpdateUser(
+        {name: currentName, nameInsensitive: currentName.toUpperCase()},
+        user.uid,
+      );
+      const response = await firebaseGetUser(user.uid);
+      if (response !== undefined) {
+        const user = {
+          uid: response.uid,
+          name: response.name,
+          nameInsensitive: response.nameInsensitive,
+          email: response.email,
+          avatarUrl: response.avatarUrl,
+          timeStamp: response.timeStamp,
+        } as userDTO;
+        await localStorageSetUser(user);
+        setUser(user);
+        setCurrentName(user.name);
+        setOldName(user.name);
+        await firebaseUpdateUserPosts({authorName: user.name}, user.uid);
+      }
+    } catch (error) {
+      throw error;
+    } finally {
+      setUpdatingUserName(false);
+      setDisabledButton(true);
+    }
+  }
+
+  async function handleUpdateUserAvatarUrl() {
+    try {
+      setUpdatingUserAvatarUrl(true);
+      if (!user?.uid) {
+        return;
+      }
+      const res = await launchImageLibrary({mediaType: 'photo'});
+      if (res.didCancel) {
+        console.log('Upload cancelado');
+      } else if (res.errorCode) {
+        console.log('Erro ao realizar o upload');
+      } else if (res.assets) {
+        const filePath = res.assets[0].uri;
+        if (filePath) {
+          await storageUploadUserAvatar(filePath, user.uid);
+          const avatarUri = await storageDownloadUserAvatar(user.uid);
+          await firebaseUpdateUser({avatarUrl: avatarUri}, user.uid);
+          const response = await firebaseGetUser(user.uid);
+          if (response !== undefined) {
+            const user = {
+              uid: response.uid,
+              name: response.name,
+              nameInsensitive: response.nameInsensitive,
+              email: response.email,
+              avatarUrl: response.avatarUrl,
+              timeStamp: response.timeStamp,
+            } as userDTO;
+            await localStorageSetUser(user);
+            setUser(user);
+            setAvatarUrl(user.avatarUrl);
+            await firebaseUpdateUserPosts(
+              {avatarUrl: user.avatarUrl},
+              user.uid,
+            );
+          }
         }
       }
     } catch (error) {
       throw error;
     } finally {
-      setUpdatingUser(false);
-      setEnabledButton(false);
+      setUpdatingUserAvatarUrl(false);
     }
   }
 
-  async function handleStorageUploadFile() {
-    if (!user?.uid) {
-      return;
-    }
-    launchImageLibrary({mediaType: 'photo'}, res => {
-      if (res.assets && res.assets[0].uri) {
-        const filePath = res.assets[0].uri;
-        storageUploadUserAvatar(filePath, user.uid);
-      } else if (res.didCancel) {
-        console.log('Cancelled');
-      } else if (res.errorCode) {
-        console.log('Error');
+  async function handleRemoveUserAvatarUrl() {
+    try {
+      setUpdatingUserAvatarUrl(true);
+      if (!user?.uid) {
+        return;
       }
-    });
+      await storageDeleteUserAvatar(user.uid);
+      await firebaseUpdateUserPosts({avatarUrl: null}, user.uid);
+      await firebaseUpdateUser({avatarUrl: null}, user.uid);
+      const response = await firebaseGetUser(user.uid);
+      if (response !== undefined) {
+        const user = {
+          uid: response.uid,
+          name: response.name,
+          nameInsensitive: response.nameInsensitive,
+          email: response.email,
+          avatarUrl: response.avatarUrl,
+          timeStamp: response.timeStamp,
+        } as userDTO;
+        await localStorageSetUser(user);
+        setUser(user);
+        setAvatarUrl(user.avatarUrl);
+      }
+    } catch (error) {
+    } finally {
+      setUpdatingUserAvatarUrl(false);
+    }
   }
 
   useEffect(() => {
-    if (user?.name == name || name == '') {
-      setEnabledButton(false);
-      return;
+    if (currentName === '' || currentName === oldName) {
+      setDisabledButton(true);
     } else {
-      setEnabledButton(true);
+      setDisabledButton(false);
     }
-  }, [name]);
+  }, [currentName]);
 
   useFocusEffect(
     useCallback(() => {
-      setName(user.name);
-    }, [user]),
+      setCurrentName(user.name);
+    }, []),
   );
 
   return (
     <ScrollView contentContainerStyle={S.container}>
       <Text style={S.userEmailText}>{user.email}</Text>
       <TouchableOpacity
-        onPress={handleStorageUploadFile}
+        onPress={handleUpdateUserAvatarUrl}
         style={[
           S.uploadAvatarButton,
-          !avatarUrl
-            ? {borderTopLeftRadius: 5, borderColor: colors.darkBlue}
-            : {borderColor: colors.black},
+          !avatarUrl ? {} : {borderTopRightRadius: 5},
         ]}>
-        {!avatarUrl ? (
-          <View style={S.uploadAvatarIcon}>
+        {avatarUrl ? (
+          <>
+            <View style={S.uploadAvatarIconBox1}>
+              <Feather name="edit" size={28} color={colors.white} />
+            </View>
+            <TouchableOpacity
+              style={S.uploadAvatarIconBox2}
+              onPress={handleRemoveUserAvatarUrl}>
+              <Feather name="x" size={28} color={colors.lightRed} />
+            </TouchableOpacity>
+          </>
+        ) : (
+          <View style={S.uploadAvatarIconBox1}>
             <Feather name="file-plus" size={28} color={colors.white} />
           </View>
-        ) : null}
-        <Image
-          source={!avatarUrl ? defaultAvatarImg : {uri: avatarUrl}}
-          style={[S.avatarImage, !avatarUrl ? {} : {borderColor: colors.white}]}
-        />
+        )}
+        {updatingUserAvatarUrl ? (
+          <ActivityIndicator
+            style={{padding: 50}}
+            color={colors.white}
+            size={50}
+          />
+        ) : (
+          <Image
+            source={!avatarUrl ? defaultAvatarImg : {uri: avatarUrl}}
+            style={[
+              S.avatarImage,
+              !avatarUrl ? {} : {borderColor: colors.white},
+            ]}
+          />
+        )}
       </TouchableOpacity>
       <View
         style={{
@@ -123,9 +215,10 @@ export function Profile() {
         }}>
         <TextInput
           style={S.userNameText}
-          value={name}
+          maxLength={15}
+          value={currentName}
           onChangeText={value => {
-            setName(value);
+            setCurrentName(value);
           }}
         />
         <View
@@ -139,16 +232,16 @@ export function Profile() {
       </View>
 
       <TouchableOpacity
-        disabled={!enabledButton}
+        disabled={disabledButton}
         style={[
           S.updateProfileButton,
-          !enabledButton ? {opacity: 0.3} : {opacity: 1},
+          disabledButton ? {opacity: 0.3} : {opacity: 1},
         ]}
-        onPress={handleFirebaseUpdateUserName}>
-        {updatingUser ? (
-          <ActivityIndicator color={colors.black} size={30} />
+        onPress={handleUpdateUserName}>
+        {updatingUserName ? (
+          <ActivityIndicator color={colors.white} size={30} />
         ) : (
-          <Text style={S.buttonText}>Save changes</Text>
+          <Text style={S.buttonText}>Save Name</Text>
         )}
       </TouchableOpacity>
       <TouchableOpacity style={S.signOutButton} onPress={signOut}>
@@ -166,9 +259,19 @@ const S = StyleSheet.create({
     marginTop: 25,
   },
 
-  uploadAvatarIcon: {
+  uploadAvatarIconBox1: {
     position: 'absolute',
     backgroundColor: colors.darkBlue,
+    padding: 4,
+    borderRadius: 10,
+    marginLeft: 5,
+    marginTop: 5,
+  },
+
+  uploadAvatarIconBox2: {
+    position: 'absolute',
+    right: 5,
+    backgroundColor: colors.white,
     padding: 4,
     borderRadius: 10,
     marginLeft: 5,
@@ -183,6 +286,8 @@ const S = StyleSheet.create({
     marginBottom: 20,
     backgroundColor: colors.black,
     borderWidth: 1,
+    borderTopLeftRadius: 5,
+    borderColor: colors.darkBlue,
   },
 
   updateProfileButton: {
@@ -198,8 +303,8 @@ const S = StyleSheet.create({
   },
   userNameText: {
     fontSize: 30,
-    color: colors.black,
-    backgroundColor: colors.white,
+    color: colors.white,
+    backgroundColor: colors.black,
     height: 50,
     borderRadius: 5,
     padding: 5,

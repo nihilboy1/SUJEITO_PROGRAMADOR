@@ -12,12 +12,12 @@ import {firebaseGetAllPostsFromAUser} from '../../connection/database';
 import {useAuthContext} from '../../hooks/useAuthContext';
 import {userPostsRouteProps} from '../../routes/private.stack.routes';
 import {colors} from '../../theme/theme';
-import {postDTO} from '../../types/postDTO';
+import {getPostDTO} from '../../types/postDTO';
 
 export function UserPosts() {
   const {user} = useAuthContext();
   const {navigate, goBack} = useNavigation();
-  const [userPosts, setUserPosts] = useState<postDTO[]>([]);
+  const [userPosts, setUserPosts] = useState<getPostDTO[]>([]);
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
   const route = useRoute();
   const {uid, name} = route.params as userPostsRouteProps;
@@ -49,8 +49,8 @@ export function UserPosts() {
         <Text style={S.postsAuthor}>
           {user?.name == name ? 'Seus Posts' : name}
         </Text>
-        <Pressable style={[S.buttonBack, S.invi]}>
-          <Feather name="chevron-left" size={32} color={colors.black} />
+        <Pressable>
+          <Feather name="chevron-left" size={32} color={colors.gray} />
         </Pressable>
       </View>
       <PostsList
@@ -63,15 +63,11 @@ export function UserPosts() {
 }
 
 const S = StyleSheet.create({
-  invi: {
-    color: 'transparent',
-    backgroundColor: 'transparent',
-  },
   safeContainer: {
     flex: 1,
     borderWidth: 1,
     padding: 10,
-    backgroundColor: colors.black,
+    backgroundColor: colors.gray,
     justifyContent: 'center',
   },
   innerContainer: {

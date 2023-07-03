@@ -12,7 +12,6 @@ import {
   firebaseGetNewerPostsFromAllUser,
   firebaseGetOlderPostsFromAllUser,
 } from '../../connection/database';
-import {storageDownloadUserAvatar} from '../../connection/storage';
 import {useAuthContext} from '../../hooks/useAuthContext';
 import {colors} from '../../theme/theme';
 import {getPostDTO} from '../../types/postDTO';
@@ -23,7 +22,7 @@ export function Home() {
   const {user} = useAuthContext();
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
   const [postPlaceholder, setPostPlaceholder] = useState<string>('');
-  const [postText, setPostText] = useState('');
+  const [postContent, setPostContent] = useState('');
 
   const [lastPost, setLastPost] =
     useState<FirebaseFirestoreTypes.DocumentData>();
@@ -93,18 +92,13 @@ export function Home() {
   async function handlefirebaseAddPost() {
     try {
       setPosting(true);
-      if (postText === '') {
+      if (postContent === '') {
         console.log('O post não pode estar vazio');
         return;
       }
-      let avatarUrl = null;
       if (user?.uid) {
-        const file = await storageDownloadUserAvatar(user.uid);
-        if (file) {
-          avatarUrl = file;
-        }
-        await firebaseAddPost(postText, user.uid);
-        setPostText('');
+        await firebaseAddPost(postContent, user);
+        setPostContent('');
       }
     } catch (error) {
       console.log('Erro na função handlefirebaseAddPost');
@@ -113,7 +107,7 @@ export function Home() {
       setModalVisible(false);
       setTheresNoMorePosts(false);
       setIsLoadingPosts(false);
-      setPostText('');
+      setPostContent('');
       if (lastPost) {
         handleFirebaseGetNewerPostsFromAllUser();
       } else {
@@ -159,7 +153,7 @@ export function Home() {
         modalVisible={modalVisible}
         postPlaceholder={postPlaceholder}
         posting={posting}
-        setPostText={setPostText}
+        setPostContent={setPostContent}
         handlefirebaseAddPost={handlefirebaseAddPost}
       />
       <NewPostWidget setModalVisible={setModalVisible} />

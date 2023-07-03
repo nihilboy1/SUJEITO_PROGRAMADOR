@@ -10,9 +10,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import * as Animatable from 'react-native-animatable';
 import {useAuthContext} from '../../hooks/useAuthContext';
 import {StackAuthRoutesProps} from '../../routes/auth.routes';
 import {colors} from '../../theme/theme';
+
 export function SignIn() {
   const {navigate} = useNavigation<StackAuthRoutesProps>();
   const [email, setEmail] = useState<string>('');
@@ -29,7 +31,9 @@ export function SignIn() {
 
   return (
     <ScrollView contentContainerStyle={S.container}>
-      <Text style={S.title}>Feed APP</Text>
+      <Animatable.Text animation="bounceIn" style={S.title}>
+        Feed APP
+      </Animatable.Text>
       <TextInput
         placeholderTextColor={colors.gray}
         value={email}
@@ -43,6 +47,7 @@ export function SignIn() {
         onSubmitEditing={handleSignIn}
         placeholderTextColor={colors.gray}
         value={password}
+        secureTextEntry
         onChangeText={value => {
           setPassword(value);
         }}

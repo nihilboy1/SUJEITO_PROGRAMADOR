@@ -56,6 +56,7 @@ export function SignUp() {
       <TextInput
         placeholderTextColor={colors.gray}
         value={password}
+        secureTextEntry
         onChangeText={value => {
           setPassword(value);
         }}

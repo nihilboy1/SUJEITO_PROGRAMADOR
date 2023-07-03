@@ -1,13 +1,11 @@
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {formatDistance} from 'date-fns';
-import {useCallback, useState} from 'react';
+import {useState} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import * as animatable from 'react-native-animatable';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import defaultAvatarImg from '../assets/avatar.png';
-import {
-  firebaseGetUserName,
-  firebaseUpdateUsersWhoLikedAPost,
-} from '../connection/database';
+import {firebaseUpdateUsersWhoLikedAPost} from '../connection/database';
 import {useAuthContext} from '../hooks/useAuthContext';
 import {StackPrivateRoutesProps} from '../routes/private.stack.routes';
 import {colors} from '../theme/theme';
@@ -23,7 +21,6 @@ export function Post({postData}: PostProps) {
   const [usersWhoLiked, setUsersWhoLiked] = useState<string[]>(
     postData.usersWhoLiked,
   );
-  const [author, setAuthor] = useState<string>('');
 
   if (!user?.uid) {
     return null;
@@ -34,6 +31,7 @@ export function Post({postData}: PostProps) {
   const likedByCurrentUser = usersWhoLiked.includes(currentUserId)
     ? 'heart'
     : 'hearto';
+
   async function handleFirebaseUpdateUsersWhoLikedAPost(id: string) {
     if (!usersWhoLiked.includes(currentUserId)) {
       setUsersWhoLiked(currentUsersWhoLiked => {
@@ -59,23 +57,20 @@ export function Post({postData}: PostProps) {
     });
   }
 
-  useFocusEffect(
-    useCallback(() => {
-      firebaseGetUserName(uid).then(response => {
-        setAuthor(response);
-      });
-    }, []),
-  );
-
   return (
-    <View style={S.container}>
+    <animatable.View style={S.container} animation="bounceInLeft">
       <TouchableOpacity
         onPress={() => {
-          navigate('userposts', {uid, name: author});
+          navigate('userposts', {uid, name: postData.authorName});
         }}
         style={S.navigateButton}>
-        <Image source={defaultAvatarImg} style={S.avatar} />
-        <Text style={S.author}>{author}</Text>
+        <Image
+          source={
+            postData.avatarUrl ? {uri: postData.avatarUrl} : defaultAvatarImg
+          }
+          style={S.avatar}
+        />
+        <Text style={S.author}>{postData.authorName}</Text>
       </TouchableOpacity>
       <Text style={S.content}>{postData.content}</Text>
       <View style={S.footerContainer}>
@@ -110,7 +105,7 @@ export function Post({postData}: PostProps) {
         )}
         <Text style={S.time}>{formatDate(postData.timeStamp)}</Text>
       </View>
-    </View>
+    </animatable.View>
   );
 }
 

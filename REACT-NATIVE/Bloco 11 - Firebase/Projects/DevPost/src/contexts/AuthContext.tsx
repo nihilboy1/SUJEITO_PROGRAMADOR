@@ -103,9 +103,9 @@ export function AuthContextProvider({children}: ContextProviderProps) {
   }
 
   async function signOut() {
-    await firebaseDisconnectUser();
-    await localStorageDeleteUser();
     setUser(null);
+    await localStorageDeleteUser();
+    await firebaseDisconnectUser();
     setIsAuthLoading(false);
     setLoggedInUser(false);
   }
