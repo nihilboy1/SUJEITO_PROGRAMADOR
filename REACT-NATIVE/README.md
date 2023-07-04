@@ -100,14 +100,12 @@ module.exports = {
   <li>Com a parte do firebase concluída, vamos colocar o arquivo baixado na pasta <code>/android/app</code> do nosso projeto CLI</li></li>
   <li>Com isso feito, vamos até a lib do <a href="https://rnfirebase.io/">RNFirebase</a> e dentro do nosso projeto CLI, usando NPM rodamos o comando <code>npm install --save @react-native-firebase/app</code></li>
   <h3>Com a lib instalada, vamos configurar a parte nativa:</h3>
-  <li>Em <code>/android/build.gradle</code> no objeto <code>dependencies</code>, que está dentro de <code>buildscript</code>, adicionamos o classpath: <code>classpath 'com.google.gms:google-services:4.3.15'</code>  
-   </li>
-   <li>Agora em <code>/android/app/build.gradle</code> adicionamos no inicio do arquivo o plugin: <code>apply plugin: 'com.google.gms.google-services'
-    /code> </li>
+  <li>Em <code>/android/build.gradle</code> no objeto <code>dependencies</code>, que está dentro de <code>buildscript</code>, adicionamos o classpath: <code>classpath 'com.google.gms:google-services:4.3.15'</code></li>
+   <li>Agora em <code>/android/app/build.gradle</code> adicionamos no inicio do arquivo o plugin: <code>apply plugin: 'com.google.gms.google-services'</code> </li>
     <h3>Com tudo acima ja feito, podemos instalar os módulos:</h3>
-    <p>Para autenticação: <code>@react-native-firebase/auth</code> </p>
-    <p>Para storage: <code>@react-native-firebase/storage</code> </p>
-    <p>Para database: <code>@react-native-firebase/firestore</code> </p>
+    <p>Para autenticação: <code>npm install @react-native-firebase/auth</code> </p>
+    <p>Para storage: <code>npm install @react-native-firebase/storage</code> </p>
+    <p>Para database: <code>npm install @react-native-firebase/firestore</code> </p>
 </ul>
 
 
