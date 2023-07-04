@@ -3,6 +3,7 @@ import {useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -10,9 +11,13 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import * as Animatable from 'react-native-animatable';
+import devPostLogoDark from '../../assets/devPostLogoDark.png';
+
+import Toast from 'react-native-toast-message';
 import {useAuthContext} from '../../hooks/useAuthContext';
 import {StackAuthRoutesProps} from '../../routes/auth.routes';
-import {colors} from '../../theme/theme';
+import {colors, fonts} from '../../theme/theme';
 
 export function SignUp() {
   const {navigate} = useNavigation<StackAuthRoutesProps>();
@@ -23,7 +28,11 @@ export function SignUp() {
 
   async function handleSignUp() {
     if (email === '' || password === '' || name === '') {
-      Alert.alert('Existem campos vazios');
+      Toast.show({
+        type: 'info',
+        text1: 'There are empty fields',
+        position: 'top',
+      });
       return;
     }
     await signUp(email, password, name);
@@ -32,58 +41,76 @@ export function SignUp() {
     setName('');
     setPassword('');
   }
+
   return (
     <ScrollView contentContainerStyle={S.container}>
-      <Text style={S.title}>Create Account</Text>
-      <TextInput
-        placeholderTextColor={colors.gray}
-        value={name}
-        onChangeText={value => {
-          setName(value);
-        }}
-        style={S.Input}
-        placeholder="Name"
-      />
-      <TextInput
-        placeholderTextColor={colors.gray}
-        value={email}
-        onChangeText={value => {
-          setEmail(value);
-        }}
-        style={S.Input}
-        placeholder="Email"
-      />
-      <TextInput
-        placeholderTextColor={colors.gray}
-        value={password}
-        secureTextEntry
-        onChangeText={value => {
-          setPassword(value);
-        }}
-        style={S.Input}
-        placeholder="Password"
-      />
+      <Animatable.View animation="fadeInDown" style={S.header}>
+        <Image source={devPostLogoDark} />
+        <TouchableOpacity
+          onPress={() => {
+            navigate('signIn');
+          }}>
+          <Text style={S.moveToLogin}>Sign In</Text>
+        </TouchableOpacity>
+      </Animatable.View>
+      <Animatable.Text
+        animation="fadeInLeft"
+        style={{
+          alignSelf: 'flex-start',
+          color: colors.text,
+          fontFamily: fonts.medium,
+          marginLeft: 2,
+          fontSize: 25,
+        }}>
+        Sign Up
+      </Animatable.Text>
+      <Animatable.View animation="fadeInLeft" style={S.inputBox}>
+        <Text style={S.inputLabelText}>Email</Text>
+        <TextInput
+          value={email}
+          keyboardType="email-address"
+          onChangeText={value => {
+            setEmail(value);
+          }}
+          style={S.textInput}
+        />
+      </Animatable.View>
+      <Animatable.View animation="fadeInLeft" style={S.inputBox}>
+        <Text style={S.inputLabelText}>Name</Text>
+        <TextInput
+          value={name}
+          onChangeText={value => {
+            setName(value);
+          }}
+          style={S.textInput}
+        />
+      </Animatable.View>
+      <Animatable.View animation="fadeInLeft" style={S.inputBox}>
+        <Text style={S.inputLabelText}>Password</Text>
+        <TextInput
+          secureTextEntry
+          value={password}
+          onChangeText={value => {
+            setPassword(value);
+          }}
+          style={S.textInput}
+        />
+      </Animatable.View>
 
       <View>
         {isAuthLoading ? (
-          <View style={S.signUpAndLoginButton}>
-            <ActivityIndicator color={colors.lightBlue} size={30} />
-          </View>
-        ) : (
           <TouchableOpacity
-            style={S.signUpAndLoginButton}
-            onPress={handleSignUp}>
-            <Text style={S.signInButtonText}>SignUp and Login</Text>
+            style={S.signUpButton}
+            onPress={handleSignUp}
+            disabled>
+            <ActivityIndicator color={colors.background} size={38} />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={S.signUpButton} onPress={handleSignUp}>
+            <Text style={S.signUpButtonText}>Sign Up</Text>
           </TouchableOpacity>
         )}
       </View>
-      <TouchableOpacity
-        style={S.moveToSignIn}
-        onPress={() => {
-          navigate('signIn');
-        }}>
-        <Text style={S.moveToSignInText}>Go back to SignIn</Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -91,63 +118,60 @@ export function SignUp() {
 const S = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: colors.black,
+    backgroundColor: colors.background,
     flex: 1,
+    padding: 10,
     gap: 50,
   },
 
-  Input: {
+  inputBox: {
+    width: '100%',
+  },
+
+  inputLabelText: {
+    marginLeft: 3,
+    color: colors.info,
+  },
+
+  textInput: {
     fontSize: 20,
-    backgroundColor: colors.darkGreen,
-    fontWeight: 'bold',
-    color: colors.black,
-    borderWidth: 1,
-    borderColor: colors.white,
-    paddingLeft: 15,
-    width: '90%',
-    borderRadius: 15,
+    borderBottomWidth: 1,
+    fontFamily: fonts.regular,
+    borderBottomColor: colors.info,
+    color: colors.text,
+    borderBottomRightRadius: 25,
   },
 
-  signUpAndLoginButton: {
-    backgroundColor: colors.darkGreen,
+  signUpButton: {
     borderRadius: 15,
+    height: 60,
     padding: 10,
-    width: 240,
+    width: 320,
     paddingHorizontal: 20,
     borderWidth: 1,
-    borderColor: colors.white,
+    backgroundColor: colors.text,
+    borderColor: colors.background,
   },
 
-  moveToSignIn: {
-    backgroundColor: colors.lightBlue,
-    borderRadius: 15,
-    padding: 10,
-    width: 230,
-    paddingHorizontal: 20,
-    borderWidth: 1,
-    borderColor: colors.white,
-  },
-
-  moveToSignInText: {
-    color: colors.black,
-    fontWeight: 'bold',
+  moveToLogin: {
+    color: colors.text,
     fontSize: 20,
     textAlign: 'center',
+    fontFamily: fonts.mono,
   },
 
-  signInButtonText: {
-    color: colors.black,
-    fontWeight: 'bold',
+  signUpButtonText: {
+    color: colors.background,
+    fontFamily: fonts.regular,
     fontSize: 24,
     textAlign: 'center',
   },
 
-  title: {
-    fontSize: 30,
-    color: colors.darkGreen,
-    fontWeight: 'bold',
-    fontStyle: 'italic',
-    textTransform: 'uppercase',
-    marginTop: 45,
+  header: {
+    width: '100%',
+    padding: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 });

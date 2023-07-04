@@ -3,6 +3,7 @@ import {useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,9 +12,11 @@ import {
   View,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
+import devPostLogoDark from '../../assets/devPostLogoDark.png';
+
 import {useAuthContext} from '../../hooks/useAuthContext';
 import {StackAuthRoutesProps} from '../../routes/auth.routes';
-import {colors} from '../../theme/theme';
+import {colors, fonts} from '../../theme/theme';
 
 export function SignIn() {
   const {navigate} = useNavigation<StackAuthRoutesProps>();
@@ -31,29 +34,47 @@ export function SignIn() {
 
   return (
     <ScrollView contentContainerStyle={S.container}>
-      <Animatable.Text animation="bounceIn" style={S.title}>
-        Feed APP
-      </Animatable.Text>
-      <TextInput
-        placeholderTextColor={colors.gray}
-        value={email}
-        onChangeText={value => {
-          setEmail(value);
-        }}
-        style={S.emailInput}
-        placeholder="Email"
-      />
-      <TextInput
-        onSubmitEditing={handleSignIn}
-        placeholderTextColor={colors.gray}
-        value={password}
-        secureTextEntry
-        onChangeText={value => {
-          setPassword(value);
-        }}
-        style={S.passwordInput}
-        placeholder="Password"
-      />
+      <Animatable.View animation="fadeInDown" style={S.header}>
+        <Image source={devPostLogoDark} style={S.devPostLogo} />
+        <TouchableOpacity
+          onPress={() => {
+            navigate('signUp');
+          }}>
+          <Text style={S.moveToSignUpText}>Sign Up</Text>
+        </TouchableOpacity>
+      </Animatable.View>
+      <Text
+        style={{
+          alignSelf: 'flex-start',
+          color: colors.text,
+          fontFamily: fonts.medium,
+          marginLeft: 2,
+          fontSize: 25,
+        }}>
+        Sign In
+      </Text>
+      <Animatable.View animation="fadeInLeft" style={S.inputBox}>
+        <Text style={S.inputLabelText}>Email</Text>
+        <TextInput
+          value={email}
+          keyboardType="email-address"
+          onChangeText={value => {
+            setEmail(value);
+          }}
+          style={S.textInput}
+        />
+      </Animatable.View>
+      <Animatable.View animation="fadeInLeft" style={S.inputBox}>
+        <Text style={S.inputLabelText}>Password</Text>
+        <TextInput
+          secureTextEntry
+          value={password}
+          onChangeText={value => {
+            setPassword(value);
+          }}
+          style={S.textInput}
+        />
+      </Animatable.View>
 
       <View>
         {isAuthLoading ? (
@@ -61,7 +82,7 @@ export function SignIn() {
             style={S.signInButton}
             onPress={handleSignIn}
             disabled>
-            <ActivityIndicator color={colors.black} size={30} />
+            <ActivityIndicator color={colors.background} size={38} />
           </TouchableOpacity>
         ) : (
           <TouchableOpacity style={S.signInButton} onPress={handleSignIn}>
@@ -69,13 +90,6 @@ export function SignIn() {
           </TouchableOpacity>
         )}
       </View>
-      <TouchableOpacity
-        style={S.moveToSignUp}
-        onPress={() => {
-          navigate('signUp');
-        }}>
-        <Text style={S.moveToSignUpText}>Create account</Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -83,75 +97,60 @@ export function SignIn() {
 const S = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: colors.black,
+    backgroundColor: colors.background,
     flex: 1,
+    padding: 10,
     gap: 50,
   },
+  devPostLogo: {},
 
-  emailInput: {
-    fontSize: 20,
-    backgroundColor: colors.lightBlue,
-    fontWeight: 'bold',
-    color: colors.black,
-    borderWidth: 1,
-    borderColor: colors.white,
-    paddingLeft: 15,
-    width: '90%',
-    borderRadius: 15,
+  inputBox: {
+    width: '100%',
   },
 
-  passwordInput: {
+  inputLabelText: {
+    marginLeft: 3,
+    color: colors.info,
+  },
+
+  textInput: {
     fontSize: 20,
-    backgroundColor: colors.lightBlue,
-    fontWeight: 'bold',
-    color: colors.black,
-    borderWidth: 1,
-    borderColor: colors.white,
-    paddingLeft: 15,
-    width: '90%',
-    borderRadius: 15,
+    borderBottomWidth: 1,
+    fontFamily: fonts.regular,
+    borderBottomColor: colors.info,
+    color: colors.text,
+    borderBottomRightRadius: 25,
   },
 
   signInButton: {
-    backgroundColor: colors.lightBlue,
     borderRadius: 15,
+    height: 60,
     padding: 10,
-    width: 130,
+    width: 320,
     paddingHorizontal: 20,
     borderWidth: 1,
-    borderColor: colors.white,
-  },
-
-  moveToSignUp: {
-    backgroundColor: colors.darkGreen,
-    borderRadius: 15,
-    padding: 10,
-    width: 200,
-    paddingHorizontal: 20,
-    borderWidth: 1,
-    borderColor: colors.white,
+    backgroundColor: colors.text,
+    borderColor: colors.background,
   },
 
   moveToSignUpText: {
-    color: colors.black,
-    fontWeight: 'bold',
+    color: colors.text,
     fontSize: 20,
-    textAlign: 'center',
+    fontFamily: fonts.mono,
   },
 
   signInButtonText: {
-    color: colors.black,
-    fontWeight: 'bold',
+    color: colors.background,
+    fontFamily: fonts.regular,
     fontSize: 24,
     textAlign: 'center',
   },
 
-  title: {
-    fontSize: 50,
-    color: colors.lightBlue,
-    fontWeight: 'bold',
-    fontStyle: 'italic',
-    textTransform: 'uppercase',
-    marginTop: 45,
+  header: {
+    width: '100%',
+    padding: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 });

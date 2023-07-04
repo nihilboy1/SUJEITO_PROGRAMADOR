@@ -14,12 +14,12 @@ export default function App() {
         <SafeAreaView
           style={{
             flex: 1,
-            backgroundColor: colors.black,
+            backgroundColor: colors.background,
           }}>
           <StatusBar
             translucent={false}
             barStyle="light-content"
-            backgroundColor={colors.black}
+            backgroundColor={colors.background}
           />
           <Routes />
         </SafeAreaView>
