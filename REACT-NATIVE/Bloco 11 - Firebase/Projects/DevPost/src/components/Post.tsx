@@ -8,7 +8,7 @@ import defaultAvatarImg from '../assets/avatar.png';
 import {firebaseUpdateUsersWhoLikedAPost} from '../connection/database';
 import {useAuthContext} from '../hooks/useAuthContext';
 import {StackPrivateRoutesProps} from '../routes/private.stack.routes';
-import {colors} from '../theme/theme';
+import {colors, fonts} from '../theme/theme';
 import {getPostDTO} from '../types/postDTO';
 
 type PostProps = {
@@ -84,7 +84,7 @@ export function Post({postData}: PostProps) {
               <AntDesign
                 name={likedByCurrentUser}
                 size={25}
-                color={colors.darkBlue}
+                color={colors.danger}
               />
             </TouchableOpacity>
           </View>
@@ -98,7 +98,7 @@ export function Post({postData}: PostProps) {
               <AntDesign
                 name={likedByCurrentUser}
                 size={25}
-                color={colors.darkBlue}
+                color={colors.danger}
               />
             </TouchableOpacity>
           </View>
@@ -115,27 +115,31 @@ const S = StyleSheet.create({
     marginBottom: 15,
     borderRadius: 5,
     padding: 15,
-    backgroundColor: colors.black,
+    backgroundColor: colors.info,
   },
 
   navigateButton: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    backgroundColor: colors.darkBlue,
+    backgroundColor: colors.primary,
     borderRadius: 50,
     padding: 5,
   },
 
   avatar: {width: 45, height: 45, borderRadius: 99},
 
-  author: {fontSize: 18, fontWeight: 'bold', color: colors.black},
+  author: {
+    fontSize: 18,
+    color: colors.text,
+    fontFamily: fonts.regular,
+  },
 
   content: {
     fontSize: 18,
     height: 100,
-    fontWeight: 'bold',
-    color: colors.white,
+    fontFamily: fonts.regular,
+    color: colors.text,
     marginTop: 10,
     marginBottom: 10,
   },
@@ -152,19 +156,19 @@ const S = StyleSheet.create({
     justifyContent: 'space-between',
   },
   likesAmount: {
-    color: colors.white,
-    fontSize: 18,
-    fontWeight: 'bold',
+    color: colors.text,
+    fontFamily: fonts.mono,
+    fontSize: 25,
     marginRight: 5,
-    marginBottom: 4,
   },
 
   beTheFirstToLike: {
-    color: colors.gray,
+    color: colors.text,
+    fontFamily: fonts.regular,
     fontSize: 16,
     marginRight: 5,
     marginBottom: 4,
   },
 
-  time: {fontSize: 17, color: colors.gray},
+  time: {fontSize: 17, color: colors.text, opacity: 0.7},
 });

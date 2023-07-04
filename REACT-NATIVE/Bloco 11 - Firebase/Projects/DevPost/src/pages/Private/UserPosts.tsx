@@ -29,7 +29,8 @@ export function UserPosts() {
         setUserPosts(posts);
       });
     } catch (error) {
-      console.log(error);
+      console.log('Erro na função handleFirebaseGetAllPostsFromAUser');
+      throw error;
     } finally {
       setIsLoadingPosts(false);
     }
@@ -44,13 +45,13 @@ export function UserPosts() {
     <SafeAreaView style={S.safeContainer}>
       <View style={S.innerContainer}>
         <Pressable style={S.buttonBack} onPress={() => goBack()}>
-          <Feather name="chevron-left" size={32} color={colors.black} />
+          <Feather name="chevron-left" size={32} color={colors.text} />
         </Pressable>
         <Text style={S.postsAuthor}>
           {user?.name == name ? 'Seus Posts' : name}
         </Text>
         <Pressable>
-          <Feather name="chevron-left" size={32} color={colors.gray} />
+          <Feather name="chevron-left" size={32} color={colors.background} />
         </Pressable>
       </View>
       <PostsList
@@ -67,7 +68,7 @@ const S = StyleSheet.create({
     flex: 1,
     borderWidth: 1,
     padding: 10,
-    backgroundColor: colors.gray,
+    backgroundColor: colors.background,
     justifyContent: 'center',
   },
   innerContainer: {
@@ -77,7 +78,7 @@ const S = StyleSheet.create({
     marginBottom: 10,
   },
   buttonBack: {
-    backgroundColor: colors.lightBlue,
+    backgroundColor: colors.info,
     borderRadius: 5,
     padding: 2,
     paddingHorizontal: 8,
@@ -91,19 +92,12 @@ const S = StyleSheet.create({
     borderRadius: 99,
   },
 
-  goBackTextIcon: {
-    textAlign: 'center',
-    fontSize: 40,
-    fontWeight: 'bold',
-    color: 'black',
-  },
-
   postsAuthor: {
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: 30,
     marginTop: 5,
     marginBottom: 10,
-    color: 'white',
+    color: colors.text,
   },
 });

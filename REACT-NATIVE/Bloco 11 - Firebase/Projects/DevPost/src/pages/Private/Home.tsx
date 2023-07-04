@@ -1,11 +1,13 @@
 import {FirebaseFirestoreTypes} from '@react-native-firebase/firestore';
-import {useFocusEffect} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useCallback, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import * as Animatable from 'react-native-animatable';
 import Toast from 'react-native-toast-message';
-
+import Feather from 'react-native-vector-icons/Feather';
+import devPostLogoDark from '../../assets/devPostLogoDark.png';
 import {NewPostModal} from '../../components/NewPostModal';
-import {NewPostWidget} from '../../components/NewPostWidget';
+import {OpenModalWidget} from '../../components/OpenModalWidget';
 import {PostsList} from '../../components/PostsList';
 import {
   firebaseAddPost,
@@ -13,13 +15,16 @@ import {
   firebaseGetOlderPostsFromAllUser,
 } from '../../connection/database';
 import {useAuthContext} from '../../hooks/useAuthContext';
-import {colors} from '../../theme/theme';
+import {StackPrivateRoutesProps} from '../../routes/private.stack.routes';
+import {colors, fonts} from '../../theme/theme';
 import {getPostDTO} from '../../types/postDTO';
+
 export function Home() {
+  const {user} = useAuthContext();
+  const {navigate} = useNavigation<StackPrivateRoutesProps>();
+
   const [posts, setPosts] = useState<getPostDTO[]>([]);
   const [posting, setPosting] = useState(false);
-
-  const {user} = useAuthContext();
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
   const [postPlaceholder, setPostPlaceholder] = useState<string>('');
   const [postContent, setPostContent] = useState('');
@@ -35,7 +40,7 @@ export function Home() {
       setIsLoadingPosts(false);
       Toast.show({
         type: 'info',
-        text1: 'There is no more posts to show',
+        text1: 'There is no more posts',
         position: 'bottom',
       });
       return;
@@ -57,7 +62,7 @@ export function Home() {
 
           Toast.show({
             type: 'info',
-            text1: 'There is no more posts to show',
+            text1: 'There is no more posts',
             position: 'bottom',
           });
           return;
@@ -92,10 +97,6 @@ export function Home() {
   async function handlefirebaseAddPost() {
     try {
       setPosting(true);
-      if (postContent === '') {
-        console.log('O post não pode estar vazio');
-        return;
-      }
       if (user?.uid) {
         await firebaseAddPost(postContent, user);
         setPostContent('');
@@ -142,6 +143,17 @@ export function Home() {
 
   return (
     <View style={S.container}>
+      <Animatable.View animation="fadeInDown" style={S.header}>
+        <Image source={devPostLogoDark} />
+        <TouchableOpacity
+          onPress={() => {
+            navigate('search');
+          }}
+          style={{flexDirection: 'row', gap: 8, alignItems: 'center'}}>
+          <Text style={S.moveToText}>Search</Text>
+          <Feather name="search" color={colors.text} size={22} />
+        </TouchableOpacity>
+      </Animatable.View>
       <PostsList
         getNewPosts={handleFirebaseGetNewerPostsFromAllUser}
         getBasePosts={firebaseGetOlderPostsFromAllUser}
@@ -153,10 +165,11 @@ export function Home() {
         modalVisible={modalVisible}
         postPlaceholder={postPlaceholder}
         posting={posting}
+        postContent={postContent}
         setPostContent={setPostContent}
         handlefirebaseAddPost={handlefirebaseAddPost}
       />
-      <NewPostWidget setModalVisible={setModalVisible} />
+      <OpenModalWidget iconName="pencil" setModalVisible={setModalVisible} />
     </View>
   );
 }
@@ -166,6 +179,22 @@ const S = StyleSheet.create({
     flex: 1,
     position: 'relative',
     padding: 15,
-    backgroundColor: colors.gray,
+    paddingTop: 5,
+    backgroundColor: colors.background,
+  },
+
+  header: {
+    width: '100%',
+    padding: 10,
+    marginBottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  moveToText: {
+    color: colors.text,
+    fontSize: 20,
+    fontFamily: fonts.mono,
   },
 });

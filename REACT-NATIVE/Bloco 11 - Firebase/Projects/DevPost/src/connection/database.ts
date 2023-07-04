@@ -154,7 +154,6 @@ export function firebaseGetUsersByName(
           timeStamp: doc.data().timeStamp,
         };
       });
-      console.log(usersList);
       setSearchedUsers(usersList);
     });
 

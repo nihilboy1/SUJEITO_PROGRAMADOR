@@ -3,6 +3,7 @@ import {
   createNativeStackNavigator,
 } from '@react-navigation/native-stack';
 import {Home} from '../pages/Private/Home';
+import {Search} from '../pages/Private/Search';
 import {UserPosts} from '../pages/Private/UserPosts';
 
 export type userPostsRouteProps = {
@@ -11,6 +12,7 @@ export type userPostsRouteProps = {
 };
 type StackPrivateRoutesList = {
   userposts: userPostsRouteProps;
+  search: undefined;
   home: undefined;
 };
 
@@ -23,6 +25,7 @@ export function PrivateStackRoutes() {
     <Navigator screenOptions={{headerShown: false}}>
       <Screen name="home" component={Home} />
       <Screen name="userposts" component={UserPosts} />
+      <Screen name="search" component={Search} />
     </Navigator>
   );
 }

@@ -53,15 +53,7 @@ export function SignUp() {
           <Text style={S.moveToLogin}>Sign In</Text>
         </TouchableOpacity>
       </Animatable.View>
-      <Animatable.Text
-        animation="fadeInLeft"
-        style={{
-          alignSelf: 'flex-start',
-          color: colors.text,
-          fontFamily: fonts.medium,
-          marginLeft: 2,
-          fontSize: 25,
-        }}>
+      <Animatable.Text animation="fadeInLeft" style={S.pageTitle}>
         Sign Up
       </Animatable.Text>
       <Animatable.View animation="fadeInLeft" style={S.inputBox}>
@@ -124,6 +116,13 @@ const S = StyleSheet.create({
     gap: 50,
   },
 
+  pageTitle: {
+    alignSelf: 'flex-start',
+    color: colors.text,
+    fontFamily: fonts.medium,
+    marginLeft: 2,
+    fontSize: 25,
+  },
   inputBox: {
     width: '100%',
   },

@@ -35,7 +35,7 @@ export function SignIn() {
   return (
     <ScrollView contentContainerStyle={S.container}>
       <Animatable.View animation="fadeInDown" style={S.header}>
-        <Image source={devPostLogoDark} style={S.devPostLogo} />
+        <Image source={devPostLogoDark} />
         <TouchableOpacity
           onPress={() => {
             navigate('signUp');
@@ -102,7 +102,6 @@ const S = StyleSheet.create({
     padding: 10,
     gap: 50,
   },
-  devPostLogo: {},
 
   inputBox: {
     width: '100%',

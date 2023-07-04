@@ -11,7 +11,7 @@ import {
 import Feather from 'react-native-vector-icons/Feather';
 import {colors} from '../theme/theme';
 
-type NewPostModalProps = {
+type NewChatRoomModalProps = {
   modalVisible: boolean;
   postContent: string;
   posting: boolean;
@@ -21,7 +21,7 @@ type NewPostModalProps = {
   setPostContent: (value: string) => void;
 };
 
-export function NewPostModal({
+export function NewChatRoomModal({
   modalVisible,
   postContent,
   setModalVisible,
@@ -29,7 +29,7 @@ export function NewPostModal({
   handlefirebaseAddPost,
   postPlaceholder,
   posting,
-}: NewPostModalProps) {
+}: NewChatRoomModalProps) {
   const [contentIsEmpty, setContentIsEmpty] = useState(false);
   function callHandleFirebaseAddPost() {
     if (postContent === '') {

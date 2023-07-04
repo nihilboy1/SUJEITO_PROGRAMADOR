@@ -2,18 +2,22 @@ import {StyleSheet, TouchableOpacity} from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
 import {colors} from '../theme/theme';
 
-type NewPostWidgetProps = {
+type OpenModalWidgetProps = {
   setModalVisible: (value: boolean) => void;
+  iconName: string;
 };
 
-export function NewPostWidget({setModalVisible}: NewPostWidgetProps) {
+export function OpenModalWidget({
+  setModalVisible,
+  iconName,
+}: OpenModalWidgetProps) {
   return (
     <TouchableOpacity
       onPress={() => {
         setModalVisible(true);
       }}
       style={S.button}>
-      <Entypo name="pencil" color={colors.black} size={25} />
+      <Entypo name={iconName} color={colors.black} size={25} />
     </TouchableOpacity>
   );
 }
@@ -26,7 +30,7 @@ const S = StyleSheet.create({
     width: 60,
     height: 60,
     zIndex: 1000,
-    backgroundColor: colors.lightBlue,
+    backgroundColor: colors.success,
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',

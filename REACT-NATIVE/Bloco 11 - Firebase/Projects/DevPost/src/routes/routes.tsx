@@ -14,7 +14,7 @@ export function Routes() {
           justifyContent: 'center',
           alignItems: 'center',
         }}>
-        <ActivityIndicator size={45} color={colors.darkGreen} />
+        <ActivityIndicator size={45} color={colors.text} />
       </View>
     );
   }

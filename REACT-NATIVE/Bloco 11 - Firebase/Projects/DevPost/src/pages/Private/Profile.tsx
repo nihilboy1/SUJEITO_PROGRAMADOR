@@ -174,23 +174,23 @@ export function Profile() {
         {avatarUrl ? (
           <>
             <View style={S.uploadAvatarIconBox1}>
-              <Feather name="edit" size={28} color={colors.white} />
+              <Feather name="edit" size={28} color={colors.text} />
             </View>
             <TouchableOpacity
               style={S.uploadAvatarIconBox2}
               onPress={handleRemoveUserAvatarUrl}>
-              <Feather name="x" size={28} color={colors.lightRed} />
+              <Feather name="x" size={28} color={colors.text} />
             </TouchableOpacity>
           </>
         ) : (
           <View style={S.uploadAvatarIconBox1}>
-            <Feather name="file-plus" size={28} color={colors.white} />
+            <Feather name="file-plus" size={28} color={colors.text} />
           </View>
         )}
         {updatingUserAvatarUrl ? (
           <ActivityIndicator
             style={{padding: 50}}
-            color={colors.white}
+            color={colors.text}
             size={50}
           />
         ) : (
@@ -223,11 +223,11 @@ export function Profile() {
         />
         <View
           style={{
-            backgroundColor: colors.darkBlue,
+            backgroundColor: colors.primary,
             padding: 4,
             borderRadius: 10,
           }}>
-          <Feather name="edit" size={28} color={colors.white} />
+          <Feather name="edit" size={28} color={colors.text} />
         </View>
       </View>
 
@@ -239,7 +239,7 @@ export function Profile() {
         ]}
         onPress={handleUpdateUserName}>
         {updatingUserName ? (
-          <ActivityIndicator color={colors.white} size={30} />
+          <ActivityIndicator color={colors.text} size={30} />
         ) : (
           <Text style={S.buttonText}>Save Name</Text>
         )}
@@ -253,7 +253,7 @@ export function Profile() {
 
 const S = StyleSheet.create({
   signOutButton: {
-    backgroundColor: colors.lightRed,
+    backgroundColor: colors.danger,
     borderRadius: 10,
     padding: 12,
     marginTop: 25,
@@ -261,7 +261,7 @@ const S = StyleSheet.create({
 
   uploadAvatarIconBox1: {
     position: 'absolute',
-    backgroundColor: colors.darkBlue,
+    backgroundColor: colors.primary,
     padding: 4,
     borderRadius: 10,
     marginLeft: 5,
@@ -271,7 +271,7 @@ const S = StyleSheet.create({
   uploadAvatarIconBox2: {
     position: 'absolute',
     right: 5,
-    backgroundColor: colors.white,
+    backgroundColor: colors.danger,
     padding: 4,
     borderRadius: 10,
     marginLeft: 5,
@@ -284,15 +284,15 @@ const S = StyleSheet.create({
     marginTop: 25,
     borderRadius: 100,
     marginBottom: 20,
-    backgroundColor: colors.black,
+    backgroundColor: colors.background,
     borderWidth: 1,
     borderTopLeftRadius: 5,
-    borderColor: colors.darkBlue,
+    borderColor: colors.text,
   },
 
   updateProfileButton: {
-    backgroundColor: colors.darkBlue,
     borderRadius: 10,
+    backgroundColor: colors.primary,
     padding: 12,
     marginTop: 25,
   },
@@ -303,8 +303,8 @@ const S = StyleSheet.create({
   },
   userNameText: {
     fontSize: 30,
-    color: colors.white,
-    backgroundColor: colors.black,
+    color: colors.text,
+    backgroundColor: colors.info,
     height: 50,
     borderRadius: 5,
     padding: 5,
@@ -312,14 +312,14 @@ const S = StyleSheet.create({
   },
   userEmailText: {
     fontSize: 22,
-    color: colors.white,
+    color: colors.text,
     fontStyle: 'italic',
     marginTop: 10,
   },
   container: {
     flex: 1,
     borderWidth: 1,
-    backgroundColor: colors.black,
+    backgroundColor: colors.background,
     alignItems: 'center',
   },
   avatarImage: {

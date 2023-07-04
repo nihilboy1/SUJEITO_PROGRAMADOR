@@ -3,8 +3,8 @@ import {
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
 import Feather from 'react-native-vector-icons/Feather';
+import {ChatRooms} from '../pages/Private/ChatRooms';
 import {Profile} from '../pages/Private/Profile';
-import {Search} from '../pages/Private/Search';
 import {colors} from '../theme/theme';
 import {PrivateStackRoutes} from './private.stack.routes';
 
@@ -26,9 +26,9 @@ export function TabPrivateRoutes() {
         tabBarHideOnKeyboard: true,
         tabBarShowLabel: false,
         tabBarActiveTintColor: colors.white,
-        tabBarInactiveTintColor: colors.black,
+        tabBarInactiveTintColor: colors.background,
         tabBarStyle: {
-          backgroundColor: colors.lightBlue,
+          backgroundColor: colors.primary,
           borderTopWidth: 0,
         },
       }}>
@@ -42,11 +42,11 @@ export function TabPrivateRoutes() {
         }}
       />
       <Screen
-        name="search"
-        component={Search}
+        name="chatRooms"
+        component={ChatRooms}
         options={{
           tabBarIcon: ({color, size}) => {
-            return <Feather name="search" color={color} size={size} />;
+            return <Feather name="message-square" color={color} size={size} />;
           },
         }}
       />

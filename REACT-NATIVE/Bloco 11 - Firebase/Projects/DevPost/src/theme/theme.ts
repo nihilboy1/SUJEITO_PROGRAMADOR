@@ -9,18 +9,17 @@ export const colors = {
   lightGreen: '#82D9A8',
   darkGreen: '#95BFA4',
   // new theme
-  primary: '#44F2E1',
-  secondary: '#0D4C73',
+  primary: '#0D4C73',
 
   success: '#038C8C',
   danger: '#ee6b6e',
-  info: '#747A8C',
+  info: '#474747',
 
   background: '#070C20',
   text: '#F2F2F2',
   border: '#00020D',
 
-  overlay: 'rgba(255, 255, 255, 0.5)',
+  overlay: 'rgba(7, 12, 32, 0.5)',
 };
 
 export const fonts = {
