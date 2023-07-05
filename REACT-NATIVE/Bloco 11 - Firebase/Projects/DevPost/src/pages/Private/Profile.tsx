@@ -165,17 +165,18 @@ export function Profile() {
   return (
     <ScrollView contentContainerStyle={S.container}>
       <Text style={S.userEmailText}>{user.email}</Text>
-      <TouchableOpacity
-        onPress={handleUpdateUserAvatarUrl}
+      <View
         style={[
-          S.uploadAvatarButton,
+          S.uploadAvatarView,
           !avatarUrl ? {} : {borderTopRightRadius: 5},
         ]}>
         {avatarUrl ? (
           <>
-            <View style={S.uploadAvatarIconBox1}>
+            <TouchableOpacity
+              onPress={handleUpdateUserAvatarUrl}
+              style={S.uploadAvatarIconBox1}>
               <Feather name="edit" size={28} color={colors.text} />
-            </View>
+            </TouchableOpacity>
             <TouchableOpacity
               style={S.uploadAvatarIconBox2}
               onPress={handleRemoveUserAvatarUrl}>
@@ -183,9 +184,11 @@ export function Profile() {
             </TouchableOpacity>
           </>
         ) : (
-          <View style={S.uploadAvatarIconBox1}>
+          <TouchableOpacity
+            onPress={handleUpdateUserAvatarUrl}
+            style={S.uploadAvatarIconBox1}>
             <Feather name="file-plus" size={28} color={colors.text} />
-          </View>
+          </TouchableOpacity>
         )}
         {updatingUserAvatarUrl ? (
           <ActivityIndicator
@@ -198,11 +201,11 @@ export function Profile() {
             source={!avatarUrl ? defaultAvatarImg : {uri: avatarUrl}}
             style={[
               S.avatarImage,
-              !avatarUrl ? {} : {borderColor: colors.white},
+              !avatarUrl ? {} : {borderColor: colors.primary},
             ]}
           />
         )}
-      </TouchableOpacity>
+      </View>
       <View
         style={{
           flexDirection: 'row',
@@ -210,7 +213,7 @@ export function Profile() {
           gap: 10,
           borderWidth: 1,
           borderRadius: 5,
-          borderColor: colors.darkBlue,
+          borderColor: colors.primary,
           padding: 5,
         }}>
         <TextInput
@@ -261,33 +264,33 @@ const S = StyleSheet.create({
 
   uploadAvatarIconBox1: {
     position: 'absolute',
+    left: 20,
+    bottom: 25,
     backgroundColor: colors.primary,
     padding: 4,
     borderRadius: 10,
     marginLeft: 5,
     marginTop: 5,
+    zIndex: 99,
   },
 
   uploadAvatarIconBox2: {
     position: 'absolute',
-    right: 5,
+    right: 20,
+    top: 25,
     backgroundColor: colors.danger,
     padding: 4,
     borderRadius: 10,
     marginLeft: 5,
     marginTop: 5,
+    zIndex: 99,
   },
 
-  uploadAvatarButton: {
+  uploadAvatarView: {
     padding: 25,
     position: 'relative',
     marginTop: 25,
-    borderRadius: 100,
     marginBottom: 20,
-    backgroundColor: colors.background,
-    borderWidth: 1,
-    borderTopLeftRadius: 5,
-    borderColor: colors.text,
   },
 
   updateProfileButton: {
@@ -299,7 +302,7 @@ const S = StyleSheet.create({
   buttonText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: colors.white,
+    color: colors.text,
   },
   userNameText: {
     fontSize: 30,
@@ -314,7 +317,7 @@ const S = StyleSheet.create({
     fontSize: 22,
     color: colors.text,
     fontStyle: 'italic',
-    marginTop: 10,
+    marginTop: 40,
   },
   container: {
     flex: 1,
@@ -326,6 +329,6 @@ const S = StyleSheet.create({
     borderRadius: 100,
     width: 150,
     height: 150,
-    borderWidth: 2,
+    borderWidth: 3,
   },
 });

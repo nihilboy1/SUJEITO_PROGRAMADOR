@@ -10,7 +10,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import {PostsList} from '../../components/PostsList';
 import {firebaseGetAllPostsFromAUser} from '../../connection/database';
 import {useAuthContext} from '../../hooks/useAuthContext';
-import {userPostsRouteProps} from '../../routes/private.stack.routes';
+import {userPostsRouteProps} from '../../routes/private.stack.posts.routes';
 import {colors} from '../../theme/theme';
 import {getPostDTO} from '../../types/postDTO';
 

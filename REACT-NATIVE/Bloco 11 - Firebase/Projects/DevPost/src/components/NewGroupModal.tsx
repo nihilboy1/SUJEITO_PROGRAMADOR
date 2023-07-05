@@ -9,74 +9,68 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import Feather from 'react-native-vector-icons/Feather';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import {colors} from '../theme/theme';
 
-type NewPostModalProps = {
+type NewGroupModalProps = {
+  creatingNewGroup: boolean;
   modalVisible: boolean;
-  postContent: string;
-  posting: boolean;
-  postPlaceholder: string;
-  handlefirebaseAddPost: () => void;
-  setModalVisible: (value: boolean) => void;
-  setPostContent: (value: string) => void;
+  handleCloseModal: () => void;
+  handleFirebaseAddNewGroup: () => void;
+  groupName: string;
+  setGroupName: (value: string) => void;
 };
 
-export function NewPostModal({
+export function NewGroupModal({
   modalVisible,
-  postContent,
-  setModalVisible,
-  setPostContent,
-  handlefirebaseAddPost,
-  postPlaceholder,
-  posting,
-}: NewPostModalProps) {
+  handleCloseModal,
+  handleFirebaseAddNewGroup,
+  creatingNewGroup,
+  groupName,
+  setGroupName,
+}: NewGroupModalProps) {
   const [contentIsEmpty, setContentIsEmpty] = useState(false);
-  function callHandleFirebaseAddPost() {
-    if (postContent === '') {
+
+  async function callhandleFirebaseAddNewGroup() {
+    if (groupName == '') {
       setContentIsEmpty(true);
       return;
     }
-    handlefirebaseAddPost();
+    handleFirebaseAddNewGroup();
   }
 
   useEffect(() => {
-    if (postContent !== '') {
+    if (groupName !== '') {
       setContentIsEmpty(false);
     }
-  }, [postContent]);
+  }, [groupName]);
 
   return (
     <Modal animationType="slide" transparent visible={modalVisible}>
-      <TouchableWithoutFeedback
-        onPress={() => {
-          setModalVisible(false);
-        }}>
+      <TouchableWithoutFeedback onPress={handleCloseModal}>
         <View style={S.centeredView} />
       </TouchableWithoutFeedback>
       <View style={S.modalView}>
         <View style={S.modalHeader}>
           <Text />
           <View style={S.modalHeaderTitle}>
-            <Text style={S.modalText}>Add a new post</Text>
-            <Feather name="coffee" size={32} color={colors.text} />
+            <Text style={S.modalText}>Create new group</Text>
+            <AntDesign name="team" size={32} color={colors.text} />
           </View>
-          <Pressable
-            style={S.buttonClose}
-            onPress={() => setModalVisible(!modalVisible)}>
+          <Pressable style={S.buttonClose} onPress={handleCloseModal}>
             <Text style={S.textStyle}>X</Text>
           </Pressable>
         </View>
         <TextInput
           textAlignVertical="top"
-          multiline
           autoCorrect={false}
-          maxLength={140}
-          placeholder={postPlaceholder}
+          maxLength={20}
+          value={groupName}
+          placeholder={'Group name'}
           style={S.input}
           placeholderTextColor={colors.text}
           onChangeText={value => {
-            setPostContent(value);
+            setGroupName(value);
           }}
         />
         <Text
@@ -85,15 +79,15 @@ export function NewPostModal({
             marginBottom: 20,
             alignSelf: 'flex-start',
           }}>
-          {contentIsEmpty ? "The post content can't be empty" : ''}
+          {contentIsEmpty ? 'Groups must have a name' : ''}
         </Text>
-        {posting ? (
+        {creatingNewGroup ? (
           <ActivityIndicator />
         ) : (
           <Pressable
-            style={S.sendPostButton}
-            onPress={callHandleFirebaseAddPost}>
-            <Text style={S.textStyle}>Post it up</Text>
+            style={S.createGroupButton}
+            onPress={callhandleFirebaseAddNewGroup}>
+            <Text style={S.textStyle}>Create</Text>
           </Pressable>
         )}
       </View>
@@ -119,21 +113,20 @@ const S = StyleSheet.create({
   },
   input: {
     marginTop: 12,
-    color: 'black',
+    color: colors.text,
     fontSize: 20,
     borderWidth: 1,
     borderRadius: 5,
     backgroundColor: colors.info,
-
-    height: 130,
+    height: 50,
     width: '100%',
   },
   modalView: {
     width: '95%',
     position: 'absolute',
     alignSelf: 'center',
-    height: 290,
-    marginTop: 70,
+    height: 210,
+    marginTop: 80,
     borderBottomRightRadius: 12,
     borderBottomLeftRadius: 12,
     backgroundColor: colors.background,
@@ -155,7 +148,7 @@ const S = StyleSheet.create({
     textAlign: 'center',
     fontSize: 20,
   },
-  sendPostButton: {
+  createGroupButton: {
     backgroundColor: colors.primary,
     borderRadius: 5,
     padding: 5,

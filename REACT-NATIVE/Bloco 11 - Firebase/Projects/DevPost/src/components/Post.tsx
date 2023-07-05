@@ -7,7 +7,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import defaultAvatarImg from '../assets/avatar.png';
 import {firebaseUpdateUsersWhoLikedAPost} from '../connection/database';
 import {useAuthContext} from '../hooks/useAuthContext';
-import {StackPrivateRoutesProps} from '../routes/private.stack.routes';
+import {PostsStackPrivateRoutesProps} from '../routes/private.stack.posts.routes';
 import {colors, fonts} from '../theme/theme';
 import {getPostDTO} from '../types/postDTO';
 
@@ -17,7 +17,7 @@ type PostProps = {
 
 export function Post({postData}: PostProps) {
   const {user} = useAuthContext();
-  const {navigate} = useNavigation<StackPrivateRoutesProps>();
+  const {navigate} = useNavigation<PostsStackPrivateRoutesProps>();
   const [usersWhoLiked, setUsersWhoLiked] = useState<string[]>(
     postData.usersWhoLiked,
   );

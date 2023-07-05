@@ -15,11 +15,11 @@ import devPostLogoDark from '../../assets/devPostLogoDark.png';
 import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
 import {firebaseGetUsersByName} from '../../connection/database';
-import {StackPrivateRoutesProps} from '../../routes/private.stack.routes';
+import {StackPrivateRoutesProps} from '../../routes/private.stack.posts.routes';
 import {colors, fonts} from '../../theme/theme';
 import {userDTO} from '../../types/userDTO';
 
-export function Search() {
+export function SearchPosts() {
   const {navigate, goBack} = useNavigation<StackPrivateRoutesProps>();
   const [userName, setUserName] = useState('');
   const [searchedUsers, setSearchedUsers] = useState<userDTO[]>([]);
@@ -52,7 +52,7 @@ export function Search() {
       <View style={S.searchContainer}>
         <Feather name="search" size={32} color={colors.black} />
         <TextInput
-          placeholder="Search for people or groups"
+          placeholder="Search for people"
           placeholderTextColor={colors.text}
           style={S.inputText}
           onChangeText={value => {

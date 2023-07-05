@@ -2,14 +2,17 @@ import {
   BottomTabNavigationProp,
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
-import {ChatRooms} from '../pages/Private/ChatRooms';
+
 import {Profile} from '../pages/Private/Profile';
 import {colors} from '../theme/theme';
-import {PrivateStackRoutes} from './private.stack.routes';
+import {PrivateStackGroupsRoutes} from './private.stack.groups.routes';
+import {PrivateStackPostsRoutes} from './private.stack.posts.routes';
 
 type TabPrivateRoutesList = {
-  home_privateStack: undefined;
+  posts_privateStack: undefined;
+  groups_privateStack: undefined;
   search: undefined;
   profile: undefined;
 };
@@ -25,7 +28,7 @@ export function TabPrivateRoutes() {
         headerShown: false,
         tabBarHideOnKeyboard: true,
         tabBarShowLabel: false,
-        tabBarActiveTintColor: colors.white,
+        tabBarActiveTintColor: colors.text,
         tabBarInactiveTintColor: colors.background,
         tabBarStyle: {
           backgroundColor: colors.primary,
@@ -33,17 +36,17 @@ export function TabPrivateRoutes() {
         },
       }}>
       <Screen
-        name="home_privateStack"
-        component={PrivateStackRoutes}
+        name="posts_privateStack"
+        component={PrivateStackPostsRoutes}
         options={{
           tabBarIcon: ({color, size}) => {
-            return <Feather name="home" color={color} size={size} />;
+            return <AntDesign name="book" color={color} size={size} />;
           },
         }}
       />
       <Screen
-        name="chatRooms"
-        component={ChatRooms}
+        name="groups_privateStack"
+        component={PrivateStackGroupsRoutes}
         options={{
           tabBarIcon: ({color, size}) => {
             return <Feather name="message-square" color={color} size={size} />;

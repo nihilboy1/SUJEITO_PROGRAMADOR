@@ -1,11 +1,14 @@
 import firestore, {
   FirebaseFirestoreTypes,
 } from '@react-native-firebase/firestore';
+import {messageDTO, newGroupDTO} from '../types/groupDTO';
 import {addPostDTO, getPostDTO, updatePostDTO} from '../types/postDTO';
 import {updateUserDTO, userDTO} from '../types/userDTO';
 
 const usersCollection = 'users';
 const postsCollection = 'posts';
+const groupsCollection = 'groups';
+const messagesCollection = 'messages';
 
 export async function firebaseSetUser(user: userDTO, uid: string) {
   try {
@@ -39,6 +42,7 @@ export async function firebaseAddPost(content: string, user: userDTO) {
     throw error;
   }
 }
+
 export async function firebaseGetOlderPostsFromAllUser(): Promise<
   [getPostDTO[], boolean, FirebaseFirestoreTypes.DocumentData]
 > {
@@ -190,6 +194,31 @@ export async function firebaseUpdateUserPosts(
     });
   } catch (error) {
     console.log('Erro na função updateUserPosts');
+    throw error;
+  }
+}
+
+export async function firebaseAddNewGroup(newGroup: newGroupDTO) {
+  try {
+    const response = await firestore()
+      .collection(groupsCollection)
+      .add(newGroup);
+    return response;
+  } catch (error) {
+    console.log('Erro na função firebaseAddNewGroup');
+    throw error;
+  }
+}
+
+export async function firbaseAddNewMessageToAGroup(
+  docRef: FirebaseFirestoreTypes.DocumentReference<FirebaseFirestoreTypes.DocumentData>,
+  newMessage: messageDTO,
+) {
+  try {
+    docRef.collection(messagesCollection).add(newMessage);
+  } catch (error) {
+    console.log('Erro na função firbaseAddNewmMessageToAGroup');
+
     throw error;
   }
 }

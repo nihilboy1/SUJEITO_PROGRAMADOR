@@ -2,30 +2,31 @@ import {
   NativeStackNavigationProp,
   createNativeStackNavigator,
 } from '@react-navigation/native-stack';
-import {Home} from '../pages/Private/Home';
-import {Search} from '../pages/Private/Search';
+import {Posts} from '../pages/Private/Posts';
+import {SearchPosts} from '../pages/Private/SearchPosts';
 import {UserPosts} from '../pages/Private/UserPosts';
 
 export type userPostsRouteProps = {
   uid: string;
   name: string;
 };
-type StackPrivateRoutesList = {
+
+type PostsRoutesProps = {
   userposts: userPostsRouteProps;
-  search: undefined;
-  home: undefined;
+  searchPosts: undefined;
+  posts: undefined;
 };
 
-export type StackPrivateRoutesProps =
-  NativeStackNavigationProp<StackPrivateRoutesList>;
+export type PostsStackPrivateRoutesProps =
+  NativeStackNavigationProp<PostsRoutesProps>;
 const {Navigator, Screen} = createNativeStackNavigator();
 
-export function PrivateStackRoutes() {
+export function PrivateStackPostsRoutes() {
   return (
     <Navigator screenOptions={{headerShown: false}}>
-      <Screen name="home" component={Home} />
+      <Screen name="posts" component={Posts} />
       <Screen name="userposts" component={UserPosts} />
-      <Screen name="search" component={Search} />
+      <Screen name="searchPosts" component={SearchPosts} />
     </Navigator>
   );
 }

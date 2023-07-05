@@ -15,13 +15,13 @@ import {
   firebaseGetOlderPostsFromAllUser,
 } from '../../connection/database';
 import {useAuthContext} from '../../hooks/useAuthContext';
-import {StackPrivateRoutesProps} from '../../routes/private.stack.routes';
+import {PostsStackPrivateRoutesProps} from '../../routes/private.stack.posts.routes';
 import {colors, fonts} from '../../theme/theme';
 import {getPostDTO} from '../../types/postDTO';
 
-export function Home() {
+export function Posts() {
   const {user} = useAuthContext();
-  const {navigate} = useNavigation<StackPrivateRoutesProps>();
+  const {navigate} = useNavigation<PostsStackPrivateRoutesProps>();
 
   const [posts, setPosts] = useState<getPostDTO[]>([]);
   const [posting, setPosting] = useState(false);
@@ -147,7 +147,7 @@ export function Home() {
         <Image source={devPostLogoDark} />
         <TouchableOpacity
           onPress={() => {
-            navigate('search');
+            navigate('searchPosts');
           }}
           style={{flexDirection: 'row', gap: 8, alignItems: 'center'}}>
           <Text style={S.moveToText}>Search</Text>
