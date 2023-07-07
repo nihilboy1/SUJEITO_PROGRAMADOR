@@ -15,7 +15,7 @@ type PostProps = {
   postData: getPostDTO;
 };
 
-export function Post({postData}: PostProps) {
+export function PostCard({postData}: PostProps) {
   const {user} = useAuthContext();
   const {navigate} = useNavigation<PostsStackPrivateRoutesProps>();
   const [usersWhoLiked, setUsersWhoLiked] = useState<string[]>(

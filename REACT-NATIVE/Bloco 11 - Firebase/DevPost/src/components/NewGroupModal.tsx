@@ -10,6 +10,8 @@ import {
   View,
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import {firebaseGetNumberOfGroupsCreatedByAUser} from '../connection/database';
+import {useAuthContext} from '../hooks/useAuthContext';
 import {colors} from '../theme/theme';
 
 type NewGroupModalProps = {
@@ -29,14 +31,30 @@ export function NewGroupModal({
   groupName,
   setGroupName,
 }: NewGroupModalProps) {
+  const {user} = useAuthContext();
+
   const [contentIsEmpty, setContentIsEmpty] = useState(false);
+  const [
+    userAlreadyHaveThreeOrMoreGroups,
+    setUserAlreadyHaveThreeOrMoreGroups,
+  ] = useState(false);
 
   async function callhandleFirebaseAddNewGroup() {
+    if (!user?.uid) {
+      return;
+    }
+
     if (groupName == '') {
       setContentIsEmpty(true);
       return;
     }
-    handleFirebaseAddNewGroup();
+    const res = await firebaseGetNumberOfGroupsCreatedByAUser(user.uid);
+    console.log(res);
+    if (res <= 3) {
+      handleFirebaseAddNewGroup();
+    } else {
+      setUserAlreadyHaveThreeOrMoreGroups(true);
+    }
   }
 
   useEffect(() => {
@@ -79,7 +97,11 @@ export function NewGroupModal({
             marginBottom: 20,
             alignSelf: 'flex-start',
           }}>
-          {contentIsEmpty ? 'Groups must have a name' : ''}
+          {contentIsEmpty
+            ? 'Groups must have a name'
+            : userAlreadyHaveThreeOrMoreGroups
+            ? "Users can't have more than three created groups"
+            : ''}
         </Text>
         {creatingNewGroup ? (
           <ActivityIndicator />

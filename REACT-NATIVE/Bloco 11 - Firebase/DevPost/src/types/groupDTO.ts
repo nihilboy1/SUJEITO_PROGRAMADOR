@@ -1,9 +1,12 @@
-export type newGroupDTO = {
+export type getGroupDTO = {
+  id: string;
   groupName: string;
-  groupOwner: string;
+  groupOwnerId: string;
   timeStamp: number;
   lastMessage: messageDTO;
 };
+
+export type addGroupDTO = Omit<getGroupDTO, 'id'>;
 
 export type messageDTO = {
   content: string;

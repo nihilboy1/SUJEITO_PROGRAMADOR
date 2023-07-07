@@ -1,7 +1,7 @@
 import firestore, {
   FirebaseFirestoreTypes,
 } from '@react-native-firebase/firestore';
-import {messageDTO, newGroupDTO} from '../types/groupDTO';
+import {addGroupDTO, getGroupDTO, messageDTO} from '../types/groupDTO';
 import {addPostDTO, getPostDTO, updatePostDTO} from '../types/postDTO';
 import {updateUserDTO, userDTO} from '../types/userDTO';
 
@@ -198,7 +198,7 @@ export async function firebaseUpdateUserPosts(
   }
 }
 
-export async function firebaseAddNewGroup(newGroup: newGroupDTO) {
+export async function firebaseAddNewGroup(newGroup: addGroupDTO) {
   try {
     const response = await firestore()
       .collection(groupsCollection)
@@ -221,4 +221,38 @@ export async function firbaseAddNewMessageToAGroup(
 
     throw error;
   }
+}
+
+export async function firebaseGetAllGroupsFromAllUsers() {
+  try {
+    const response = await firestore()
+      .collection(groupsCollection)
+      .orderBy('lastMessage.timeStamp', 'desc')
+      .limit(10)
+      .get();
+    const groups: getGroupDTO[] = response.docs.map(group => {
+      return {
+        id: group.id,
+        groupName: group.data().groupName,
+        groupOwnerId: group.data().groupOwner,
+        timeStamp: group.data().timeStamp,
+        lastMessage: group.data().lastMessage,
+      };
+    });
+    return groups;
+  } catch (error) {
+    console.log('Erro na função firebaseGetAllGroupsFromAllUsers');
+    throw error;
+  }
+}
+
+export async function firebaseGetNumberOfGroupsCreatedByAUser(
+  groupOwnerId: string,
+) {
+  const response = await firestore()
+    .collection(groupsCollection)
+    .where('groupOwnerId', '==', groupOwnerId)
+    .get();
+
+  return response.docs.length;
 }

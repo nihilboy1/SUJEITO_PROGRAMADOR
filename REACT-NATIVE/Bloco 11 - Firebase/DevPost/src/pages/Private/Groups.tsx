@@ -1,19 +1,29 @@
-import {useNavigation} from '@react-navigation/native';
-import {useState} from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useCallback, useState} from 'react';
+import {
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import * as Animatable from 'react-native-animatable';
+import Toast from 'react-native-toast-message';
 import Feather from 'react-native-vector-icons/Feather';
 import devGroupLogoDark from '../../assets/devGroupLogoDark.png';
+import {GroupCard} from '../../components/GroupCard';
 import {NewGroupModal} from '../../components/NewGroupModal';
 import {OpenModalWidget} from '../../components/OpenModalWidget';
 import {
   firbaseAddNewMessageToAGroup,
   firebaseAddNewGroup,
+  firebaseGetAllGroupsFromAllUsers,
 } from '../../connection/database';
 import {useAuthContext} from '../../hooks/useAuthContext';
 import {GroupsStackPrivateRoutesProps} from '../../routes/private.stack.groups.routes';
 import {colors, fonts} from '../../theme/theme';
-import {messageDTO} from '../../types/groupDTO';
+import {getGroupDTO, messageDTO} from '../../types/groupDTO';
 
 export function Groups() {
   const {user} = useAuthContext();
@@ -21,6 +31,9 @@ export function Groups() {
   const [creatingNewGroup, setCreatingNewGroup] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [groupName, setGroupName] = useState('');
+  const [groups, setGroups] = useState<getGroupDTO[]>([]);
+  const [loadingGroups, setLoadingGroups] = useState(false);
+  const [theresNoMoreGroups, setTheresNoMoreGroups] = useState(false);
 
   async function handleCloseModal() {
     setModalVisible(!modalVisible);
@@ -40,7 +53,7 @@ export function Groups() {
       } as messageDTO;
       const res = await firebaseAddNewGroup({
         groupName: groupName,
-        groupOwner: user.uid,
+        groupOwnerId: user.uid,
         lastMessage,
         timeStamp: Date.now(),
       });
@@ -48,9 +61,44 @@ export function Groups() {
     } catch (error) {
     } finally {
       setCreatingNewGroup(false);
+      setTheresNoMoreGroups(false);
       handleCloseModal();
     }
   }
+
+  async function handleFirebaseGetAllGroupsFromAllUsers() {
+    if (theresNoMoreGroups) {
+      setLoadingGroups(false);
+      Toast.show({
+        type: 'info',
+        text1: 'All groups was loaded',
+        position: 'bottom',
+      });
+      return;
+    }
+    if (loadingGroups) {
+      return;
+    }
+    try {
+      setLoadingGroups(true);
+      const response = await firebaseGetAllGroupsFromAllUsers();
+      if (response) {
+        setGroups(response);
+      }
+    } catch (error) {
+      console.log('Erro na função handleFirebaseGetAllGroupsFromAllUsers');
+      throw error;
+    } finally {
+      setLoadingGroups(false);
+      setTheresNoMoreGroups(true);
+    }
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      handleFirebaseGetAllGroupsFromAllUsers();
+    }, [theresNoMoreGroups]),
+  );
 
   return (
     <View style={S.container}>
@@ -65,6 +113,19 @@ export function Groups() {
           <Feather name="search" color={colors.text} size={22} />
         </TouchableOpacity>
       </Animatable.View>
+      <FlatList
+        showsVerticalScrollIndicator={false}
+        data={groups}
+        keyExtractor={item => item.id}
+        renderItem={({item}) => {
+          return (
+            <GroupCard
+              groupName={item.groupName}
+              lastMessageContent={item.lastMessage.content}
+            />
+          );
+        }}
+      />
       <OpenModalWidget iconName="plus" setModalVisible={setModalVisible} />
       <NewGroupModal
         setGroupName={setGroupName}

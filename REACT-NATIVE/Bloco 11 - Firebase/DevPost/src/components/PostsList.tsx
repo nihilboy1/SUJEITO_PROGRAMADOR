@@ -1,6 +1,6 @@
 import {FlatList} from 'react-native';
 import {getPostDTO} from '../types/postDTO';
-import {Post} from './Post';
+import {PostCard} from './PostCard';
 
 type PostListProps = {
   posts: getPostDTO[];
@@ -27,7 +27,7 @@ export function PostsList({
       onRefresh={getBasePosts}
       refreshing={isLoadingPosts}
       renderItem={({item}) => {
-        return <Post postData={item} />;
+        return <PostCard postData={item} />;
       }}
     />
   );
