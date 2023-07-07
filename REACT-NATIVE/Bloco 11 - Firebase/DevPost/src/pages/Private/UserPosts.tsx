@@ -19,8 +19,8 @@ export function UserPosts() {
   const {navigate, goBack} = useNavigation();
   const [userPosts, setUserPosts] = useState<getPostDTO[]>([]);
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
-  const route = useRoute();
-  const {uid, name} = route.params as userPostsRouteProps;
+  const {params} = useRoute();
+  const {uid, name} = params as userPostsRouteProps;
 
   async function handleFirebaseGetAllPostsFromAUser() {
     try {

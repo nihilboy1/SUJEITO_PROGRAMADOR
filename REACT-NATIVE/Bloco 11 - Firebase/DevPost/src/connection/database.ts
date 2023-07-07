@@ -1,7 +1,8 @@
 import firestore, {
   FirebaseFirestoreTypes,
 } from '@react-native-firebase/firestore';
-import {addGroupDTO, getGroupDTO, messageDTO} from '../types/groupDTO';
+import {addGroupDTO, getGroupDTO} from '../types/groupDTO';
+import {addMessageDTO, getMessageDTO} from '../types/messageDTO';
 import {addPostDTO, getPostDTO, updatePostDTO} from '../types/postDTO';
 import {updateUserDTO, userDTO} from '../types/userDTO';
 
@@ -140,10 +141,10 @@ export async function firebaseGetAllPostsFromAUser(uid: string) {
 
 export function firebaseGetUsersByName(
   fullOrPartialUserName: string,
-  setSearchedUsers: React.Dispatch<React.SetStateAction<userDTO[]>>,
+  setMessages: React.Dispatch<React.SetStateAction<userDTO[]>>,
 ) {
   const fullOrPartialUserNameInUpperCase = fullOrPartialUserName.toUpperCase();
-  const sub = firestore()
+  const unsub = firestore()
     .collection(usersCollection)
     .where('nameInsensitive', '>=', fullOrPartialUserNameInUpperCase)
     .where('nameInsensitive', '<=', fullOrPartialUserNameInUpperCase + '\uf8ff')
@@ -158,10 +159,10 @@ export function firebaseGetUsersByName(
           timeStamp: doc.data().timeStamp,
         };
       });
-      setSearchedUsers(usersList);
+      setMessages(usersList);
     });
 
-  return sub;
+  return unsub;
 }
 
 export async function firebaseUpdateUser(
@@ -210,14 +211,14 @@ export async function firebaseAddNewGroup(newGroup: addGroupDTO) {
   }
 }
 
-export async function firbaseAddNewMessageToAGroup(
+export async function firbaseAddDefaultMessageToAGroup(
   docRef: FirebaseFirestoreTypes.DocumentReference<FirebaseFirestoreTypes.DocumentData>,
-  newMessage: messageDTO,
+  defaultMessage: addMessageDTO,
 ) {
   try {
-    docRef.collection(messagesCollection).add(newMessage);
+    docRef.collection(messagesCollection).add(defaultMessage);
   } catch (error) {
-    console.log('Erro na função firbaseAddNewmMessageToAGroup');
+    console.log('Erro na função firbaseAdddefaultmMessageToAGroup');
 
     throw error;
   }
@@ -234,7 +235,7 @@ export async function firebaseGetAllGroupsFromAllUsers() {
       return {
         id: group.id,
         groupName: group.data().groupName,
-        groupOwnerId: group.data().groupOwner,
+        groupOwnerId: group.data().groupOwnerId,
         timeStamp: group.data().timeStamp,
         lastMessage: group.data().lastMessage,
       };
@@ -255,4 +256,82 @@ export async function firebaseGetNumberOfGroupsCreatedByAUser(
     .get();
 
   return response.docs.length;
+}
+
+export async function firebaseDeleteAGroup(groupId: string) {
+  try {
+    await firestore().collection(groupsCollection).doc(groupId).delete();
+  } catch (error) {
+    console.log('Erro na função firebaseDeleteAGroup');
+  }
+}
+
+export function firebaseGetAllMessagesFromAGroup(
+  groupId: string,
+  setSearchedMessages: React.Dispatch<React.SetStateAction<getMessageDTO[]>>,
+) {
+  const unsub = firestore()
+    .collection(groupsCollection)
+    .doc(groupId)
+    .collection(messagesCollection)
+    .orderBy('timeStamp', 'desc')
+    .onSnapshot(snapShot => {
+      const messages: getMessageDTO[] = snapShot.docs.map(doc => {
+        return {
+          id: doc.id,
+          content: doc.data().content,
+          timeStamp: doc.data().timeStamp,
+          author: doc.data().author,
+        };
+      });
+      setSearchedMessages(messages);
+      console.log(messages);
+    });
+
+  return unsub;
+}
+
+export async function firebaseAddNewMessageToAGroup(
+  groupId: string,
+  name: string,
+  uid: string,
+  content: string,
+  timeStamp: number,
+) {
+  try {
+    await firestore()
+      .collection(groupsCollection)
+      .doc(groupId)
+      .collection(messagesCollection)
+      .add({
+        author: {
+          name,
+          uid,
+        },
+        content,
+        timeStamp,
+      });
+  } catch (error) {
+    console.log('Erro na função firebaseAddNewMessageToAGroup');
+    throw error;
+  }
+}
+
+export async function firebaseUpdateLastMessageFromAGroup(
+  groupId: string,
+  content: string,
+  timeStamp: number,
+) {
+  try {
+    await firestore().collection(groupsCollection).doc(groupId).update({
+      lastMessage: {
+        content,
+        timeStamp,
+      },
+    });
+  } catch (error) {
+    console.log('Erro na função updateLastMessageFromAGroup');
+
+    throw error;
+  }
 }

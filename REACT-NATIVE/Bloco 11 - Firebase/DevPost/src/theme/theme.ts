@@ -11,7 +11,7 @@ export const colors = {
   // new theme
   primary: '#0D4C73',
 
-  success: '#038C8C',
+  success: '#dcf8c5',
   danger: '#ee6b6e',
   info: '#474747',
 

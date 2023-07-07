@@ -1,6 +1,7 @@
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useCallback, useState} from 'react';
 import {
+  Alert,
   FlatList,
   Image,
   StyleSheet,
@@ -16,14 +17,16 @@ import {GroupCard} from '../../components/GroupCard';
 import {NewGroupModal} from '../../components/NewGroupModal';
 import {OpenModalWidget} from '../../components/OpenModalWidget';
 import {
-  firbaseAddNewMessageToAGroup,
+  firbaseAddDefaultMessageToAGroup,
   firebaseAddNewGroup,
+  firebaseDeleteAGroup,
   firebaseGetAllGroupsFromAllUsers,
 } from '../../connection/database';
 import {useAuthContext} from '../../hooks/useAuthContext';
 import {GroupsStackPrivateRoutesProps} from '../../routes/private.stack.groups.routes';
 import {colors, fonts} from '../../theme/theme';
-import {getGroupDTO, messageDTO} from '../../types/groupDTO';
+import {getGroupDTO} from '../../types/groupDTO';
+import {addMessageDTO} from '../../types/messageDTO';
 
 export function Groups() {
   const {user} = useAuthContext();
@@ -46,18 +49,22 @@ export function Groups() {
     }
     try {
       setCreatingNewGroup(true);
-      const lastMessage = {
+      const defaultMessage = {
         content: `${groupName} group was created. Welcome!`,
         timeStamp: Date.now(),
-        type: 'system',
-      } as messageDTO;
+        author: {
+          name: 'system',
+          uid: 'system',
+        },
+        id: 'system',
+      } as addMessageDTO;
       const res = await firebaseAddNewGroup({
         groupName: groupName,
         groupOwnerId: user.uid,
-        lastMessage,
+        lastMessage: defaultMessage,
         timeStamp: Date.now(),
       });
-      await firbaseAddNewMessageToAGroup(res, lastMessage);
+      await firbaseAddDefaultMessageToAGroup(res, defaultMessage);
     } catch (error) {
     } finally {
       setCreatingNewGroup(false);
@@ -94,6 +101,37 @@ export function Groups() {
     }
   }
 
+  async function handleFireBaseDeleteAGroup(
+    groupOwnerId: string,
+    groupId: string,
+  ) {
+    if (groupOwnerId !== user?.uid) {
+      return;
+    }
+
+    Alert.alert('Warning!', 'Do you really want to delete this group?', [
+      {
+        text: 'Cancel',
+        onPress: () => {},
+        style: 'cancel',
+      },
+      {
+        text: 'Delete Group',
+        onPress: async () => {
+          try {
+            setLoadingGroups(true);
+            await firebaseDeleteAGroup(groupId);
+          } catch (error) {
+            throw error;
+          } finally {
+            setLoadingGroups(false);
+            setTheresNoMoreGroups(false);
+          }
+        },
+      },
+    ]);
+  }
+
   useFocusEffect(
     useCallback(() => {
       handleFirebaseGetAllGroupsFromAllUsers();
@@ -122,6 +160,9 @@ export function Groups() {
             <GroupCard
               groupName={item.groupName}
               lastMessageContent={item.lastMessage.content}
+              handleFireBaseDeleteAGroup={handleFireBaseDeleteAGroup}
+              groupOwnerId={item.groupOwnerId}
+              groupId={item.id}
             />
           );
         }}
