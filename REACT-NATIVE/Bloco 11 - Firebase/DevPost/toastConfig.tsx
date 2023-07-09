@@ -1,4 +1,9 @@
-import {InfoToast, ToastProps} from 'react-native-toast-message';
+import Toast, {
+  ErrorToast,
+  InfoToast,
+  SuccessToast,
+  ToastProps,
+} from 'react-native-toast-message';
 import {colors, fonts} from './src/theme/theme';
 
 export const toastConfig = {
@@ -6,18 +11,65 @@ export const toastConfig = {
     <InfoToast
       {...props}
       style={{
-        backgroundColor: colors.info,
-        borderWidth: 1,
+        backgroundColor: colors.text,
+        borderLeftWidth: 10,
         borderColor: colors.info,
-        borderLeftColor: colors.danger,
       }}
       contentContainerStyle={{paddingHorizontal: 15}}
       text1Style={{
-        fontFamily: fonts.mono,
+        fontFamily: fonts.medium,
         fontSize: 18,
-        color: colors.text,
-        fontWeight: '400',
+        color: colors.black,
+      }}
+    />
+  ),
+  success: (props: ToastProps) => (
+    <SuccessToast
+      {...props}
+      style={{
+        backgroundColor: colors.text,
+        borderLeftWidth: 10,
+        borderColor: colors.success,
+      }}
+      contentContainerStyle={{paddingHorizontal: 15}}
+      text1Style={{
+        fontFamily: fonts.medium,
+        fontSize: 18,
+        color: colors.black,
+      }}
+    />
+  ),
+  error: (props: ToastProps) => (
+    <ErrorToast
+      {...props}
+      style={{
+        backgroundColor: colors.text,
+        borderLeftWidth: 10,
+        borderColor: colors.success,
+      }}
+      contentContainerStyle={{paddingHorizontal: 15}}
+      text1Style={{
+        fontFamily: fonts.medium,
+        fontSize: 18,
+        color: colors.black,
       }}
     />
   ),
 };
+
+export function showToast(
+  type: 'success' | 'info' | 'error',
+  position: 'bottom' | 'top',
+  mainContent: string,
+  otherContent?: string,
+) {
+  Toast.show({
+    onPress: () => {
+      Toast.hide();
+    },
+    type,
+    text1: mainContent,
+    text2: otherContent,
+    position,
+  });
+}

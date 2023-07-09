@@ -20,7 +20,7 @@ import {StackAuthRoutesProps} from '../../routes/auth.routes';
 import {colors, fonts} from '../../theme/theme';
 
 export function SignUp() {
-  const {navigate} = useNavigation<StackAuthRoutesProps>();
+  const {navigate, goBack} = useNavigation<StackAuthRoutesProps>();
   const [email, setEmail] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -48,7 +48,7 @@ export function SignUp() {
         <Image source={devPostLogoDark} />
         <TouchableOpacity
           onPress={() => {
-            navigate('signIn');
+            goBack();
           }}>
           <Text style={S.moveToLogin}>Sign In</Text>
         </TouchableOpacity>

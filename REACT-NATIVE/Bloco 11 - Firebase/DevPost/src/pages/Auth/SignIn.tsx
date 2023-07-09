@@ -1,5 +1,5 @@
-import {useNavigation} from '@react-navigation/native';
-import {useState} from 'react';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useCallback, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -11,9 +11,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import * as Animatable from 'react-native-animatable';
 import devPostLogoDark from '../../assets/devPostLogoDark.png';
 
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {showToast} from '../../../toastConfig';
 import {useAuthContext} from '../../hooks/useAuthContext';
 import {StackAuthRoutesProps} from '../../routes/auth.routes';
 import {colors, fonts} from '../../theme/theme';
@@ -32,17 +33,23 @@ export function SignIn() {
     await signIn(email, password);
   }
 
+  useFocusEffect(
+    useCallback(() => {
+      showToast('success', 'bottom', 'texto');
+    }, []),
+  );
+
   return (
-    <ScrollView contentContainerStyle={S.container}>
-      <Animatable.View animation="fadeInDown" style={S.header}>
+    <SafeAreaView style={S.container}>
+      <View style={S.header}>
         <Image source={devPostLogoDark} />
         <TouchableOpacity
           onPress={() => {
             navigate('signUp');
           }}>
-          <Text style={S.moveToSignUpText}>Sign Up</Text>
+          <Text style={S.moveToSignUpText}>Create account</Text>
         </TouchableOpacity>
-      </Animatable.View>
+      </View>
       <Text
         style={{
           alignSelf: 'flex-start',
@@ -53,44 +60,45 @@ export function SignIn() {
         }}>
         Sign In
       </Text>
-      <Animatable.View animation="fadeInLeft" style={S.inputBox}>
-        <Text style={S.inputLabelText}>Email</Text>
-        <TextInput
-          value={email}
-          keyboardType="email-address"
-          onChangeText={value => {
-            setEmail(value);
-          }}
-          style={S.textInput}
-        />
-      </Animatable.View>
-      <Animatable.View animation="fadeInLeft" style={S.inputBox}>
-        <Text style={S.inputLabelText}>Password</Text>
-        <TextInput
-          secureTextEntry
-          value={password}
-          onChangeText={value => {
-            setPassword(value);
-          }}
-          style={S.textInput}
-        />
-      </Animatable.View>
-
-      <View>
-        {isAuthLoading ? (
-          <TouchableOpacity
-            style={S.signInButton}
-            onPress={handleSignIn}
-            disabled>
-            <ActivityIndicator color={colors.background} size={38} />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity style={S.signInButton} onPress={handleSignIn}>
-            <Text style={S.signInButtonText}>Sign In</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-    </ScrollView>
+      <ScrollView>
+        <View style={S.inputBox}>
+          <Text style={S.inputLabelText}>Email</Text>
+          <TextInput
+            value={email}
+            keyboardType="email-address"
+            onChangeText={value => {
+              setEmail(value);
+            }}
+            style={S.textInput}
+          />
+        </View>
+        <View style={S.inputBox}>
+          <Text style={S.inputLabelText}>Password</Text>
+          <TextInput
+            secureTextEntry
+            value={password}
+            onChangeText={value => {
+              setPassword(value);
+            }}
+            style={S.textInput}
+          />
+        </View>
+        <View>
+          {isAuthLoading ? (
+            <TouchableOpacity
+              style={S.signInButton}
+              onPress={handleSignIn}
+              disabled>
+              <ActivityIndicator color={colors.background} size={38} />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={S.signInButton} onPress={handleSignIn}>
+              <Text style={S.signInButtonText}>Sign In</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -98,7 +106,7 @@ const S = StyleSheet.create({
   container: {
     alignItems: 'center',
     backgroundColor: colors.background,
-    flex: 1,
+    flexGrow: 1,
     padding: 10,
     gap: 50,
   },
