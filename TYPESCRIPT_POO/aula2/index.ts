@@ -9,6 +9,7 @@ class Car {
     return this.cor;
   }
   // esse método só pode ser acessado pela própria classe, suas instancias ou instancias e classes filhas
+  // se for private aqui, o método só pode ser acessado pela própria classe
   protected move(km: number) {
     console.log("move, move", km);
   }
