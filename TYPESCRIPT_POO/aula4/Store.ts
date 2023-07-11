@@ -19,16 +19,16 @@ export class Store {
     this.priceWithDiscount = 0;
   }
 
-  private giveDiscount(price: number): number {
+  public giveDiscount(price: number): number {
     if (this.car.getYear() < 2000) {
-      this.priceWithDiscount = this.car.getPrice() * 90;
+      this.priceWithDiscount = this.car.getPrice() * 0.9;
       this.car.setPrice(this.priceWithDiscount);
     } else {
       this.car.setPrice(price);
     }
 
     if (this.consumer.getIncome() < 5000) {
-      this.priceWithDiscount = this.car.getPrice() * 90;
+      this.priceWithDiscount = this.car.getPrice() * 0.9;
       return this.car.setPrice(this.priceWithDiscount);
     } else {
       return this.car.setPrice(this.car.getPrice());
@@ -37,5 +37,13 @@ export class Store {
 
   public addComission(value: number): number {
     return this.attendant.setCommission(value * 0.02);
+  }
+
+  public PurchaseDetails(): void {
+    console.log(
+      `Consumer: ${this.consumer.getName()} 
+      \nModel: ${this.car.getModel()}, Year: ${this.car.getYear()}, Price: ${this.car.getPrice()} 
+      \nAttendant: ${this.attendant.getCommission()}`
+    );
   }
 }

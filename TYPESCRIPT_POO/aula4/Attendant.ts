@@ -15,10 +15,10 @@ export class Attendant {
   }
 
   public setName(name: string) {
-    this.name = name;
+    return (this.name = name);
   }
 
-  public setCommission(commission: number) {
-    this.commission = commission;
+  public setCommission(commission: number): number {
+    return (this.commission = commission);
   }
 }

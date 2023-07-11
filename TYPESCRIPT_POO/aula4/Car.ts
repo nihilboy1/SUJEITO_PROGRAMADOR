@@ -27,7 +27,7 @@ export class Car {
   public setYear(year: number): void {
     this.year = year;
   }
-  public setPrice(price: number): void {
-    this.price = price;
+  public setPrice(price: number): number {
+    return (this.price = price);
   }
 }

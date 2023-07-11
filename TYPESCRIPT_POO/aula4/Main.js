@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var Attendant_1 = require("./Attendant");
+var Car_1 = require("./Car");
+var Consumer_1 = require("./Consumer");
+var Store_1 = require("./Store");
+var car = new Car_1.Car("Logan", 1998, 10000);
+var consumer = new Consumer_1.Consumer("João", 50000);
+var attendant = new Attendant_1.Attendant("Paulo");
+var store = new Store_1.Store(consumer, car, attendant);
+store.PurchaseDetails();

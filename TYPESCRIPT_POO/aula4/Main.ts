@@ -8,3 +8,5 @@ const consumer = new Consumer("João", 50000);
 const attendant = new Attendant("Paulo");
 
 const store = new Store(consumer, car, attendant);
+
+store.PurchaseDetails();

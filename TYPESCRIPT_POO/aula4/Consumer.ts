@@ -16,10 +16,10 @@ export class Consumer {
   }
 
   public setName(name: string) {
-    this.name = name;
+    return (this.name = name);
   }
 
   public setIncome(income: number) {
-    this.income = income;
+    return (this.income = income);
   }
 }
