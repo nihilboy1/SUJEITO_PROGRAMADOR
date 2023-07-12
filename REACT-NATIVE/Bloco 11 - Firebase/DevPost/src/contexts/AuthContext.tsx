@@ -1,10 +1,6 @@
 import {ReactNode, createContext, useEffect, useState} from 'react';
-import {
-  firebaseConnectUser,
-  firebaseCreateUser,
-  firebaseDisconnectUser,
-} from '../connection/auth';
-import {firebaseGetUser, firebaseSetUser} from '../connection/database';
+import {FirebaseAuth} from '../connection/Firebase/auth';
+import {FirebaseUsersDatabase} from '../connection/Firebase/database';
 import {
   localStorageDeleteUser,
   localStorageGetUser,
@@ -40,7 +36,7 @@ export function AuthContextProvider({children}: ContextProviderProps) {
   async function signUp(email: string, password: string, name: string) {
     try {
       setIsAuthLoading(true);
-      const uid = await firebaseCreateUser(email, password);
+      const uid = await FirebaseAuth.CreateUser(email, password);
       if (uid !== undefined) {
         const user = {
           uid,
@@ -50,11 +46,10 @@ export function AuthContextProvider({children}: ContextProviderProps) {
           email,
           timeStamp: Date.now(),
         };
-        await firebaseSetUser(user, uid);
+        await FirebaseUsersDatabase.Set(user, uid);
         await signIn(email, password);
       }
     } catch (error) {
-      console.log('Erro na função de signUp');
     } finally {
       setIsAuthLoading(false);
     }
@@ -63,9 +58,9 @@ export function AuthContextProvider({children}: ContextProviderProps) {
   async function signIn(email: string, password: string) {
     try {
       setIsAuthLoading(true);
-      const uid = await firebaseConnectUser(email, password);
+      const uid = await FirebaseAuth.ConnectUser(email, password);
       if (uid !== undefined) {
-        const response = await firebaseGetUser(uid);
+        const response = await FirebaseUsersDatabase.Get(uid);
         if (response !== undefined) {
           const user: userDTO = {
             uid: response.uid,
@@ -81,7 +76,6 @@ export function AuthContextProvider({children}: ContextProviderProps) {
         }
       }
     } catch (error) {
-      console.log('Erro na função de signIn');
     } finally {
       setIsAuthLoading(false);
     }
@@ -96,7 +90,6 @@ export function AuthContextProvider({children}: ContextProviderProps) {
         setLoggedInUser(true);
       }
     } catch {
-      console.log('Erro na função handleLocalStorageGetUser ');
     } finally {
       setIsLocalUserFetched(true);
     }
@@ -105,7 +98,7 @@ export function AuthContextProvider({children}: ContextProviderProps) {
   async function signOut() {
     setUser(null);
     await localStorageDeleteUser();
-    await firebaseDisconnectUser();
+    await FirebaseAuth.DisconnectUser();
     setIsAuthLoading(false);
     setLoggedInUser(false);
   }

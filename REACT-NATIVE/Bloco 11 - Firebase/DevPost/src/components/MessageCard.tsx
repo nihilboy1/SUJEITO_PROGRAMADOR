@@ -16,7 +16,6 @@ export function MessageCard({author, content, timeStamp}: MessageCardProps) {
   if (!user?.uid) {
     return;
   }
-  console.log(author.uid);
 
   return (
     <View

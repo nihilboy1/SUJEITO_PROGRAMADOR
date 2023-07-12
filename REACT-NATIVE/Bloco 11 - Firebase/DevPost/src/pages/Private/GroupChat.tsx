@@ -15,11 +15,7 @@ import * as Animatable from 'react-native-animatable';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
 import {MessageCard} from '../../components/MessageCard';
-import {
-  firebaseAddNewMessageToAGroup,
-  firebaseGetAllMessagesFromAGroup,
-  firebaseUpdateLastMessageFromAGroup,
-} from '../../connection/database';
+import {FirebaseMessagesDatabase} from '../../connection/Firebase/database';
 import {useAuthContext} from '../../hooks/useAuthContext';
 import {colors, fonts} from '../../theme/theme';
 import {getMessageDTO} from '../../types/messageDTO';
@@ -39,11 +35,11 @@ export function GroupChat() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const sub = firebaseGetAllMessagesFromAGroup(groupId, setMessages);
+    const sub = FirebaseMessagesDatabase.GetAll(groupId, setMessages);
     return () => sub();
   }, []);
 
-  async function handleFirebaseAddMessageToAGroup() {
+  async function addMessageToAGroup() {
     if (!user?.name) {
       return;
     }
@@ -53,8 +49,8 @@ export function GroupChat() {
     try {
       setSendingMessage(true);
       const now = Date.now();
-      await firebaseUpdateLastMessageFromAGroup(groupId, message, now);
-      await firebaseAddNewMessageToAGroup(
+      await FirebaseMessagesDatabase.UpdateLast(groupId, message, now);
+      await FirebaseMessagesDatabase.Add(
         groupId,
         user.name,
         user.uid,
@@ -62,7 +58,6 @@ export function GroupChat() {
         now,
       );
     } catch (error) {
-      console.log('Erro na função handleFirebaseAddMessageToAGroup');
       throw error;
     } finally {
       setMessage('');
@@ -141,7 +136,7 @@ export function GroupChat() {
           <TouchableOpacity
             disabled={sendingMessage}
             onPress={() => {
-              handleFirebaseAddMessageToAGroup();
+              addMessageToAGroup();
             }}
             style={{
               padding: 15,

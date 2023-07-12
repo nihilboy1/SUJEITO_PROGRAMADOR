@@ -4,7 +4,6 @@ import {
   ActivityIndicator,
   Alert,
   Image,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -60,44 +59,42 @@ export function SignIn() {
         }}>
         Sign In
       </Text>
-      <ScrollView>
-        <View style={S.inputBox}>
-          <Text style={S.inputLabelText}>Email</Text>
-          <TextInput
-            value={email}
-            keyboardType="email-address"
-            onChangeText={value => {
-              setEmail(value);
-            }}
-            style={S.textInput}
-          />
-        </View>
-        <View style={S.inputBox}>
-          <Text style={S.inputLabelText}>Password</Text>
-          <TextInput
-            secureTextEntry
-            value={password}
-            onChangeText={value => {
-              setPassword(value);
-            }}
-            style={S.textInput}
-          />
-        </View>
-        <View>
-          {isAuthLoading ? (
-            <TouchableOpacity
-              style={S.signInButton}
-              onPress={handleSignIn}
-              disabled>
-              <ActivityIndicator color={colors.background} size={38} />
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity style={S.signInButton} onPress={handleSignIn}>
-              <Text style={S.signInButtonText}>Sign In</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </ScrollView>
+      <View style={S.inputBox}>
+        <Text style={S.inputLabelText}>Email</Text>
+        <TextInput
+          value={email}
+          keyboardType="email-address"
+          onChangeText={value => {
+            setEmail(value);
+          }}
+          style={S.textInput}
+        />
+      </View>
+      <View style={S.inputBox}>
+        <Text style={S.inputLabelText}>Password</Text>
+        <TextInput
+          secureTextEntry
+          value={password}
+          onChangeText={value => {
+            setPassword(value);
+          }}
+          style={S.textInput}
+        />
+      </View>
+      <View>
+        {isAuthLoading ? (
+          <TouchableOpacity
+            style={S.signInButton}
+            onPress={handleSignIn}
+            disabled>
+            <ActivityIndicator color={colors.background} size={38} />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={S.signInButton} onPress={handleSignIn}>
+            <Text style={S.signInButtonText}>Sign In</Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </SafeAreaView>
   );
 }

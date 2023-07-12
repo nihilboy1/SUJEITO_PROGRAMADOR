@@ -4,10 +4,8 @@ import {
 } from '@react-navigation/native-stack';
 import {GroupChat} from '../pages/Private/GroupChat';
 import {Groups} from '../pages/Private/Groups';
-import {SearchGroups} from '../pages/Private/SearchGroups';
 
 type GroupsRoutesProps = {
-  searchGroups: undefined;
   groups: undefined;
   groupChat: {groupName: string; groupId: string};
 };
@@ -20,7 +18,6 @@ export function PrivateStackGroupsRoutes() {
   return (
     <Navigator screenOptions={{headerShown: false}}>
       <Screen name="groups" component={Groups} />
-      <Screen name="searchGroups" component={SearchGroups} />
       <Screen name="groupChat" component={GroupChat} />
     </Navigator>
   );

@@ -9,11 +9,7 @@ import devPostLogoDark from '../../assets/devPostLogoDark.png';
 import {NewPostModal} from '../../components/NewPostModal';
 import {OpenModalWidget} from '../../components/OpenModalWidget';
 import {PostsList} from '../../components/PostsList';
-import {
-  firebaseAddPost,
-  firebaseGetNewerPostsFromAllUser,
-  firebaseGetOlderPostsFromAllUser,
-} from '../../connection/database';
+import {FirebasePostsDatabase} from '../../connection/Firebase/database';
 import {useAuthContext} from '../../hooks/useAuthContext';
 import {PostsStackPrivateRoutesProps} from '../../routes/private.stack.posts.routes';
 import {colors, fonts} from '../../theme/theme';
@@ -28,14 +24,12 @@ export function Posts() {
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
   const [postPlaceholder, setPostPlaceholder] = useState<string>('');
   const [postContent, setPostContent] = useState('');
-
   const [lastPost, setLastPost] =
     useState<FirebaseFirestoreTypes.DocumentData>();
   const [modalVisible, setModalVisible] = useState(false);
-
   const [theresNoMorePosts, setTheresNoMorePosts] = useState(false);
 
-  async function handleFirebaseGetNewerPostsFromAllUser() {
+  async function getNewerPostsFromAllUser() {
     if (theresNoMorePosts) {
       setIsLoadingPosts(false);
       Toast.show({
@@ -53,7 +47,7 @@ export function Posts() {
       setIsLoadingPosts(true);
       if (lastPost) {
         const [newerPosts, theresNoMorePosts, lastPostFromNewer] =
-          await firebaseGetNewerPostsFromAllUser(lastPost);
+          await FirebasePostsDatabase.GetNewer(lastPost);
         setPosts(currentPosts => [...currentPosts, ...newerPosts]);
         setLastPost(lastPostFromNewer);
         setTheresNoMorePosts(theresNoMorePosts);
@@ -69,17 +63,16 @@ export function Posts() {
         }
       }
     } catch (error) {
-      console.log('Erro na função handleFirebaseGetNewerPosts');
       throw error;
     } finally {
       setIsLoadingPosts(false);
     }
   }
 
-  async function handlefirebaseGetOlderPostsFromAllUser() {
+  async function getOlderPostsFromAllUser() {
     try {
       setIsLoadingPosts(true);
-      firebaseGetOlderPostsFromAllUser().then(response => {
+      FirebasePostsDatabase.GetOlder().then(response => {
         const [olderPosts, theresNoMorePosts, lastPostFromOlder] = response;
         if (olderPosts !== undefined) {
           setPosts(olderPosts);
@@ -88,21 +81,19 @@ export function Posts() {
         }
       });
     } catch (error) {
-      console.log('Erro na função handleFirebaseGetOlderPosts');
     } finally {
       setIsLoadingPosts(false);
     }
   }
 
-  async function handlefirebaseAddPost() {
+  async function addPost() {
     try {
       setPosting(true);
       if (user?.uid) {
-        await firebaseAddPost(postContent, user);
+        await FirebasePostsDatabase.Add(postContent, user);
         setPostContent('');
       }
     } catch (error) {
-      console.log('Erro na função handlefirebaseAddPost');
     } finally {
       setPosting(false);
       setModalVisible(false);
@@ -110,14 +101,14 @@ export function Posts() {
       setIsLoadingPosts(false);
       setPostContent('');
       if (lastPost) {
-        handleFirebaseGetNewerPostsFromAllUser();
+        getNewerPostsFromAllUser();
       } else {
-        handlefirebaseGetOlderPostsFromAllUser();
+        getOlderPostsFromAllUser();
       }
     }
   }
 
-  function getRandomPlaceholder() {
+  function setRandomPlaceholder() {
     const placeholderPhrases: string[] = [
       'Share your thoughts.',
       "Tell us what's new.",
@@ -136,8 +127,8 @@ export function Posts() {
 
   useFocusEffect(
     useCallback(() => {
-      handlefirebaseGetOlderPostsFromAllUser();
-      getRandomPlaceholder();
+      getOlderPostsFromAllUser();
+      setRandomPlaceholder();
     }, []),
   );
 
@@ -155,8 +146,8 @@ export function Posts() {
         </TouchableOpacity>
       </Animatable.View>
       <PostsList
-        getNewPosts={handleFirebaseGetNewerPostsFromAllUser}
-        getBasePosts={firebaseGetOlderPostsFromAllUser}
+        getNewPosts={getNewerPostsFromAllUser}
+        getBasePosts={FirebasePostsDatabase.GetOlder}
         isLoadingPosts={isLoadingPosts}
         posts={posts}
       />
@@ -167,7 +158,7 @@ export function Posts() {
         posting={posting}
         postContent={postContent}
         setPostContent={setPostContent}
-        handlefirebaseAddPost={handlefirebaseAddPost}
+        addPost={addPost}
       />
       <OpenModalWidget iconName="pencil" setModalVisible={setModalVisible} />
     </View>

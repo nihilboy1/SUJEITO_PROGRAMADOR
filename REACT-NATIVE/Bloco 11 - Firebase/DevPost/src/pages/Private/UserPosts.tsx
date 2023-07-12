@@ -8,7 +8,7 @@ import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
 import {PostsList} from '../../components/PostsList';
-import {firebaseGetAllPostsFromAUser} from '../../connection/database';
+import {FirebasePostsDatabase} from '../../connection/Firebase/database';
 import {useAuthContext} from '../../hooks/useAuthContext';
 import {userPostsRouteProps} from '../../routes/private.stack.posts.routes';
 import {colors} from '../../theme/theme';
@@ -16,20 +16,19 @@ import {getPostDTO} from '../../types/postDTO';
 
 export function UserPosts() {
   const {user} = useAuthContext();
-  const {navigate, goBack} = useNavigation();
+  const {goBack} = useNavigation();
   const [userPosts, setUserPosts] = useState<getPostDTO[]>([]);
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
   const {params} = useRoute();
   const {uid, name} = params as userPostsRouteProps;
 
-  async function handleFirebaseGetAllPostsFromAUser() {
+  async function getAllPostsFromAUser() {
     try {
       setIsLoadingPosts(true);
-      firebaseGetAllPostsFromAUser(uid).then(posts => {
+      FirebasePostsDatabase.GetAllFromAUser(uid).then(posts => {
         setUserPosts(posts);
       });
     } catch (error) {
-      console.log('Erro na função handleFirebaseGetAllPostsFromAUser');
       throw error;
     } finally {
       setIsLoadingPosts(false);
@@ -38,7 +37,7 @@ export function UserPosts() {
 
   useFocusEffect(
     useCallback(() => {
-      handleFirebaseGetAllPostsFromAUser();
+      getAllPostsFromAUser();
     }, []),
   );
   return (
@@ -55,7 +54,7 @@ export function UserPosts() {
         </Pressable>
       </View>
       <PostsList
-        getBasePosts={handleFirebaseGetAllPostsFromAUser}
+        getBasePosts={getAllPostsFromAUser}
         posts={userPosts}
         isLoadingPosts={isLoadingPosts}
       />

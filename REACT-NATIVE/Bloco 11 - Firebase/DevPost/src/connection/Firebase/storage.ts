@@ -12,7 +12,6 @@ export async function storageDownloadUserAvatar(uid: string) {
     // retorna o download que foi realizado a partir do local
     return imageUrl;
   } catch (error) {
-    console.log('Erro na função storageDownloadUserAvatar');
     throw error;
   }
 }
@@ -28,7 +27,6 @@ export async function storageUploadUserAvatar(filePath: string, uid: string) {
 
     return res;
   } catch (error) {
-    console.log('Erro na função storageUploadUserAvatar');
     throw error;
   }
 }
@@ -39,7 +37,6 @@ export async function storageDeleteUserAvatar(uid: string) {
     await storage().ref(usersAvatarStorageRef).child(uid).delete();
     // deleta a imagem no path passado
   } catch (error) {
-    console.log('Erro na função storageDeleteUserAvatar');
     throw error;
   }
 }

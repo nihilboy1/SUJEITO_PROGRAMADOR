@@ -17,7 +17,7 @@ type NewPostModalProps = {
   postContent: string;
   posting: boolean;
   postPlaceholder: string;
-  handlefirebaseAddPost: () => void;
+  addPost: () => void;
   setModalVisible: (value: boolean) => void;
   setPostContent: (value: string) => void;
 };
@@ -27,17 +27,17 @@ export function NewPostModal({
   postContent,
   setModalVisible,
   setPostContent,
-  handlefirebaseAddPost,
+  addPost,
   postPlaceholder,
   posting,
 }: NewPostModalProps) {
   const [contentIsEmpty, setContentIsEmpty] = useState(false);
-  function callHandleFirebaseAddPost() {
+  function handleAddPost() {
     if (postContent === '') {
       setContentIsEmpty(true);
       return;
     }
-    handlefirebaseAddPost();
+    addPost();
   }
 
   useEffect(() => {
@@ -90,9 +90,7 @@ export function NewPostModal({
         {posting ? (
           <ActivityIndicator />
         ) : (
-          <Pressable
-            style={S.sendPostButton}
-            onPress={callHandleFirebaseAddPost}>
+          <Pressable style={S.sendPostButton} onPress={handleAddPost}>
             <Text style={S.textStyle}>Post it up</Text>
           </Pressable>
         )}

@@ -1,4 +1,4 @@
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 import {useCallback, useState} from 'react';
 import {
   Alert,
@@ -17,20 +17,16 @@ import {GroupCard} from '../../components/GroupCard';
 import {NewGroupModal} from '../../components/NewGroupModal';
 import {OpenModalWidget} from '../../components/OpenModalWidget';
 import {
-  firbaseAddDefaultMessageToAGroup,
-  firebaseAddNewGroup,
-  firebaseDeleteAGroup,
-  firebaseGetAllGroupsFromAllUsers,
-} from '../../connection/database';
+  FirebaseGroupsDatabase,
+  FirebaseMessagesDatabase,
+} from '../../connection/Firebase/database';
 import {useAuthContext} from '../../hooks/useAuthContext';
-import {GroupsStackPrivateRoutesProps} from '../../routes/private.stack.groups.routes';
 import {colors, fonts} from '../../theme/theme';
 import {getGroupDTO} from '../../types/groupDTO';
 import {addMessageDTO} from '../../types/messageDTO';
 
 export function Groups() {
   const {user} = useAuthContext();
-  const {navigate} = useNavigation<GroupsStackPrivateRoutesProps>();
   const [creatingNewGroup, setCreatingNewGroup] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [groupName, setGroupName] = useState('');
@@ -43,7 +39,7 @@ export function Groups() {
     setGroupName('');
   }
 
-  async function handleFirebaseAddNewGroup() {
+  async function addNewGroup() {
     if (!user?.uid) {
       return;
     }
@@ -58,13 +54,13 @@ export function Groups() {
         },
         id: 'system',
       } as addMessageDTO;
-      const res = await firebaseAddNewGroup({
+      const res = await FirebaseGroupsDatabase.Add({
         groupName: groupName,
         groupOwnerId: user.uid,
         lastMessage: defaultMessage,
         timeStamp: Date.now(),
       });
-      await firbaseAddDefaultMessageToAGroup(res, defaultMessage);
+      await FirebaseMessagesDatabase.AddDefault(res, defaultMessage);
     } catch (error) {
     } finally {
       setCreatingNewGroup(false);
@@ -88,12 +84,11 @@ export function Groups() {
     }
     try {
       setLoadingGroups(true);
-      const response = await firebaseGetAllGroupsFromAllUsers();
+      const response = await FirebaseGroupsDatabase.GetAll();
       if (response) {
         setGroups(response);
       }
     } catch (error) {
-      console.log('Erro na função handleFirebaseGetAllGroupsFromAllUsers');
       throw error;
     } finally {
       setLoadingGroups(false);
@@ -120,7 +115,7 @@ export function Groups() {
         onPress: async () => {
           try {
             setLoadingGroups(true);
-            await firebaseDeleteAGroup(groupId);
+            await FirebaseGroupsDatabase.Delete(groupId);
           } catch (error) {
             throw error;
           } finally {
@@ -143,9 +138,7 @@ export function Groups() {
       <Animatable.View animation="fadeInDown" style={S.header}>
         <Image source={devGroupLogoDark} />
         <TouchableOpacity
-          onPress={() => {
-            navigate('searchGroups');
-          }}
+          onPress={() => {}}
           style={{flexDirection: 'row', gap: 8, alignItems: 'center'}}>
           <Text style={S.moveToText}>Search</Text>
           <Feather name="search" color={colors.text} size={22} />
@@ -174,7 +167,7 @@ export function Groups() {
         handleCloseModal={handleCloseModal}
         modalVisible={modalVisible}
         creatingNewGroup={creatingNewGroup}
-        handleFirebaseAddNewGroup={handleFirebaseAddNewGroup}
+        addNewGroup={addNewGroup}
       />
     </View>
   );

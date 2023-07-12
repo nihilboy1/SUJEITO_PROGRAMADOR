@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {firebaseGetNumberOfGroupsCreatedByAUser} from '../connection/database';
+import {FirebaseGroupsDatabase} from '../connection/Firebase/database';
 import {useAuthContext} from '../hooks/useAuthContext';
 import {colors} from '../theme/theme';
 
@@ -18,7 +18,7 @@ type NewGroupModalProps = {
   creatingNewGroup: boolean;
   modalVisible: boolean;
   handleCloseModal: () => void;
-  handleFirebaseAddNewGroup: () => void;
+  addNewGroup: () => void;
   groupName: string;
   setGroupName: (value: string) => void;
 };
@@ -26,7 +26,7 @@ type NewGroupModalProps = {
 export function NewGroupModal({
   modalVisible,
   handleCloseModal,
-  handleFirebaseAddNewGroup,
+  addNewGroup,
   creatingNewGroup,
   groupName,
   setGroupName,
@@ -39,7 +39,7 @@ export function NewGroupModal({
     setUserAlreadyHaveThreeOrMoreGroups,
   ] = useState(false);
 
-  async function callhandleFirebaseAddNewGroup() {
+  async function handleAddNewGroup() {
     if (!user?.uid) {
       return;
     }
@@ -48,10 +48,9 @@ export function NewGroupModal({
       setContentIsEmpty(true);
       return;
     }
-    const res = await firebaseGetNumberOfGroupsCreatedByAUser(user.uid);
-    console.log(res);
+    const res = await FirebaseGroupsDatabase.AmountOwnedByAUser(user.uid);
     if (res <= 3) {
-      handleFirebaseAddNewGroup();
+      addNewGroup();
     } else {
       setUserAlreadyHaveThreeOrMoreGroups(true);
     }
@@ -106,9 +105,7 @@ export function NewGroupModal({
         {creatingNewGroup ? (
           <ActivityIndicator />
         ) : (
-          <Pressable
-            style={S.createGroupButton}
-            onPress={callhandleFirebaseAddNewGroup}>
+          <Pressable style={S.createGroupButton} onPress={handleAddNewGroup}>
             <Text style={S.textStyle}>Create</Text>
           </Pressable>
         )}

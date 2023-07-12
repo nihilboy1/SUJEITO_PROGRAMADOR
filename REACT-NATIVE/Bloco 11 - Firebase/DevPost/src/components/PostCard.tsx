@@ -5,7 +5,7 @@ import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import * as animatable from 'react-native-animatable';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import defaultAvatarImg from '../assets/avatar.png';
-import {firebaseUpdateUsersWhoLikedAPost} from '../connection/database';
+import {FirebasePostsDatabase} from '../connection/Firebase/database';
 import {useAuthContext} from '../hooks/useAuthContext';
 import {PostsStackPrivateRoutesProps} from '../routes/private.stack.posts.routes';
 import {colors, fonts} from '../theme/theme';
@@ -32,11 +32,11 @@ export function PostCard({postData}: PostProps) {
     ? 'heart'
     : 'hearto';
 
-  async function handleFirebaseUpdateUsersWhoLikedAPost(id: string) {
+  async function updateUsersWhoLikedAPost(id: string) {
     if (!usersWhoLiked.includes(currentUserId)) {
       setUsersWhoLiked(currentUsersWhoLiked => {
         const updatedUsersWhoLiked = [...currentUsersWhoLiked, currentUserId];
-        firebaseUpdateUsersWhoLikedAPost(id, updatedUsersWhoLiked);
+        FirebasePostsDatabase.UpdateLikes(id, updatedUsersWhoLiked);
         return updatedUsersWhoLiked;
       });
     } else {
@@ -46,11 +46,11 @@ export function PostCard({postData}: PostProps) {
         },
       );
       setUsersWhoLiked(usersWhoLikedWithoutTheCurrentUser);
-      firebaseUpdateUsersWhoLikedAPost(id, usersWhoLikedWithoutTheCurrentUser);
+      FirebasePostsDatabase.UpdateLikes(id, usersWhoLikedWithoutTheCurrentUser);
     }
   }
 
-  function formatDate(timeStamp: number) {
+  function dateFormatter(timeStamp: number) {
     const postDate = new Date(timeStamp);
     return formatDistance(new Date(), postDate, {
       /* Poderia aqui passar o Locale PT-BR, mas optei por deixar tudo em inglês*/
@@ -79,7 +79,7 @@ export function PostCard({postData}: PostProps) {
             <Text style={S.likesAmount}>{usersWhoLiked.length}</Text>
             <TouchableOpacity
               onPress={() => {
-                handleFirebaseUpdateUsersWhoLikedAPost(postData.id);
+                updateUsersWhoLikedAPost(postData.id);
               }}>
               <AntDesign
                 name={likedByCurrentUser}
@@ -93,7 +93,7 @@ export function PostCard({postData}: PostProps) {
             <Text style={S.beTheFirstToLike}>Be the first to like </Text>
             <TouchableOpacity
               onPress={() => {
-                handleFirebaseUpdateUsersWhoLikedAPost(postData.id);
+                updateUsersWhoLikedAPost(postData.id);
               }}>
               <AntDesign
                 name={likedByCurrentUser}
@@ -103,7 +103,7 @@ export function PostCard({postData}: PostProps) {
             </TouchableOpacity>
           </View>
         )}
-        <Text style={S.time}>{formatDate(postData.timeStamp)}</Text>
+        <Text style={S.time}>{dateFormatter(postData.timeStamp)}</Text>
       </View>
     </animatable.View>
   );

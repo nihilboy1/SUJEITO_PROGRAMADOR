@@ -14,15 +14,14 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import Feather from 'react-native-vector-icons/Feather';
 import defaultAvatarImg from '../../assets/avatar.png';
 import {
-  firebaseGetUser,
-  firebaseUpdateUser,
-  firebaseUpdateUserPosts,
-} from '../../connection/database';
+  FirebasePostsDatabase,
+  FirebaseUsersDatabase,
+} from '../../connection/Firebase/database';
 import {
   storageDeleteUserAvatar,
   storageDownloadUserAvatar,
   storageUploadUserAvatar,
-} from '../../connection/storage';
+} from '../../connection/Firebase/storage';
 import {useAuthContext} from '../../hooks/useAuthContext';
 import {localStorageSetUser} from '../../storage/userStorage';
 import {colors} from '../../theme/theme';
@@ -35,23 +34,22 @@ export function Profile() {
   }
   const [updatingUserName, setUpdatingUserName] = useState(false);
   const [updatingUserAvatarUrl, setUpdatingUserAvatarUrl] = useState(false);
-
   const [oldName, setOldName] = useState(user.name);
   const [currentName, setCurrentName] = useState<string>(user.name);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(user.avatarUrl);
   const [disabledButton, setDisabledButton] = useState<boolean>(true);
 
-  async function handleUpdateUserName() {
+  async function updateUserName() {
     try {
       setUpdatingUserName(true);
       if (!user?.uid) {
         return;
       }
-      await firebaseUpdateUser(
+      await FirebaseUsersDatabase.Update(
         {name: currentName, nameInsensitive: currentName.toUpperCase()},
         user.uid,
       );
-      const response = await firebaseGetUser(user.uid);
+      const response = await FirebaseUsersDatabase.Get(user.uid);
       if (response !== undefined) {
         const user = {
           uid: response.uid,
@@ -65,7 +63,10 @@ export function Profile() {
         setUser(user);
         setCurrentName(user.name);
         setOldName(user.name);
-        await firebaseUpdateUserPosts({authorName: user.name}, user.uid);
+        await FirebasePostsDatabase.UpdateAllFromAUser(
+          {authorName: user.name},
+          user.uid,
+        );
       }
     } catch (error) {
       throw error;
@@ -75,7 +76,7 @@ export function Profile() {
     }
   }
 
-  async function handleUpdateUserAvatarUrl() {
+  async function updateUserAvatarUrl() {
     try {
       setUpdatingUserAvatarUrl(true);
       if (!user?.uid) {
@@ -83,16 +84,16 @@ export function Profile() {
       }
       const res = await launchImageLibrary({mediaType: 'photo'});
       if (res.didCancel) {
-        console.log('Upload cancelado');
+        return;
       } else if (res.errorCode) {
-        console.log('Erro ao realizar o upload');
+        return;
       } else if (res.assets) {
         const filePath = res.assets[0].uri;
         if (filePath) {
           await storageUploadUserAvatar(filePath, user.uid);
           const avatarUri = await storageDownloadUserAvatar(user.uid);
-          await firebaseUpdateUser({avatarUrl: avatarUri}, user.uid);
-          const response = await firebaseGetUser(user.uid);
+          await FirebaseUsersDatabase.Update({avatarUrl: avatarUri}, user.uid);
+          const response = await FirebaseUsersDatabase.Get(user.uid);
           if (response !== undefined) {
             const user = {
               uid: response.uid,
@@ -105,7 +106,7 @@ export function Profile() {
             await localStorageSetUser(user);
             setUser(user);
             setAvatarUrl(user.avatarUrl);
-            await firebaseUpdateUserPosts(
+            await FirebaseUsersDatabase.Update(
               {avatarUrl: user.avatarUrl},
               user.uid,
             );
@@ -119,16 +120,19 @@ export function Profile() {
     }
   }
 
-  async function handleRemoveUserAvatarUrl() {
+  async function removeUserAvatarUrl() {
     try {
       setUpdatingUserAvatarUrl(true);
       if (!user?.uid) {
         return;
       }
       await storageDeleteUserAvatar(user.uid);
-      await firebaseUpdateUserPosts({avatarUrl: null}, user.uid);
-      await firebaseUpdateUser({avatarUrl: null}, user.uid);
-      const response = await firebaseGetUser(user.uid);
+      await FirebasePostsDatabase.UpdateAllFromAUser(
+        {avatarUrl: null},
+        user.uid,
+      );
+      await FirebaseUsersDatabase.Update({avatarUrl: null}, user.uid);
+      const response = await FirebaseUsersDatabase.Get(user.uid);
       if (response !== undefined) {
         const user = {
           uid: response.uid,
@@ -173,19 +177,19 @@ export function Profile() {
         {avatarUrl ? (
           <>
             <TouchableOpacity
-              onPress={handleUpdateUserAvatarUrl}
+              onPress={updateUserAvatarUrl}
               style={S.uploadAvatarIconBox1}>
               <Feather name="edit" size={28} color={colors.text} />
             </TouchableOpacity>
             <TouchableOpacity
               style={S.uploadAvatarIconBox2}
-              onPress={handleRemoveUserAvatarUrl}>
+              onPress={removeUserAvatarUrl}>
               <Feather name="x" size={28} color={colors.text} />
             </TouchableOpacity>
           </>
         ) : (
           <TouchableOpacity
-            onPress={handleUpdateUserAvatarUrl}
+            onPress={updateUserAvatarUrl}
             style={S.uploadAvatarIconBox1}>
             <Feather name="file-plus" size={28} color={colors.text} />
           </TouchableOpacity>
@@ -240,7 +244,7 @@ export function Profile() {
           S.updateProfileButton,
           disabledButton ? {opacity: 0.3} : {opacity: 1},
         ]}
-        onPress={handleUpdateUserName}>
+        onPress={updateUserName}>
         {updatingUserName ? (
           <ActivityIndicator color={colors.text} size={30} />
         ) : (

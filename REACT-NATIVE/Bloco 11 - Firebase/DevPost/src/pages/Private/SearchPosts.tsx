@@ -14,7 +14,7 @@ import devPostLogoDark from '../../assets/devPostLogoDark.png';
 
 import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
-import {firebaseGetUsersByName} from '../../connection/database';
+import {FirebaseUsersDatabase} from '../../connection/Firebase/database';
 import {PostsStackPrivateRoutesProps} from '../../routes/private.stack.posts.routes';
 import {colors, fonts} from '../../theme/theme';
 import {userDTO} from '../../types/userDTO';
@@ -29,7 +29,7 @@ export function SearchPosts() {
       setSearchedUsers([]);
       return;
     }
-    const sub = firebaseGetUsersByName(userName, setSearchedUsers);
+    const sub = FirebaseUsersDatabase.GetByName(userName, setSearchedUsers);
     return () => sub();
   }, [userName]);
 
