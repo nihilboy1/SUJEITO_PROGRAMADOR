@@ -17,11 +17,8 @@ import {
   FirebasePostsDatabase,
   FirebaseUsersDatabase,
 } from '../../connection/Firebase/database';
-import {
-  storageDeleteUserAvatar,
-  storageDownloadUserAvatar,
-  storageUploadUserAvatar,
-} from '../../connection/Firebase/storage';
+import {FirebaseUsersAvatarStorage} from '../../connection/Firebase/storage';
+
 import {useAuthContext} from '../../hooks/useAuthContext';
 import {localStorageSetUser} from '../../storage/userStorage';
 import {colors} from '../../theme/theme';
@@ -90,8 +87,8 @@ export function Profile() {
       } else if (res.assets) {
         const filePath = res.assets[0].uri;
         if (filePath) {
-          await storageUploadUserAvatar(filePath, user.uid);
-          const avatarUri = await storageDownloadUserAvatar(user.uid);
+          await FirebaseUsersAvatarStorage.Upload(filePath, user.uid);
+          const avatarUri = await FirebaseUsersAvatarStorage.Download(user.uid);
           await FirebaseUsersDatabase.Update({avatarUrl: avatarUri}, user.uid);
           const response = await FirebaseUsersDatabase.Get(user.uid);
           if (response !== undefined) {
@@ -126,7 +123,7 @@ export function Profile() {
       if (!user?.uid) {
         return;
       }
-      await storageDeleteUserAvatar(user.uid);
+      await FirebaseUsersAvatarStorage.Delete(user.uid);
       await FirebasePostsDatabase.UpdateAllFromAUser(
         {avatarUrl: null},
         user.uid,
